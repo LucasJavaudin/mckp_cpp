@@ -10,9 +10,10 @@ class Item {
 		int index;
 	public:
 		Item(double, double, int);
-		double getValue();
-		double getWeight();
-		int getIndex();
+		double getValue()const ;
+		double getWeight()const ;
+		int getIndex()const ;
+
 };
 
 class Class {
@@ -20,8 +21,11 @@ class Class {
 		vector<Item*> items;
 	public:
 		Class(vector<double>, vector<double>);
+		Class(vector<Item*>);
 		Item* operator[](int);
-		int getNbItems();
+		int getNbItems() const;
+		void sortItemsWeight();
+		Class upperBound();
 };
 
 class Dataset {
@@ -30,5 +34,5 @@ class Dataset {
 	public:
 		Dataset(int, int, lognormal_distribution<double>, lognormal_distribution<double>, default_random_engine);
 		Class* operator[](int);
-		int getNbClasses();
+		int getNbClasses() const;
 };
