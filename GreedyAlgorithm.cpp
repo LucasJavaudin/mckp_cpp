@@ -8,44 +8,47 @@ using namespace std;
 
 pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
     vector<Class> R; // @R va contenir les enveloppes convexes de chaque classes
-    //vector<vector<double>> p;
-    //vector<vector<double>> w;
     vector<pair<Item*,double>> pairItem;
-    vector<vector<double>> inKnapsack(d.getNbClasses(),{1});
+    vector<vector<double>> inKnapsack(d.getNbClasses(),{1}); // vector : the  element [i][j] = 1 if the i-th item of
+    // j-th class is in the knapsack, 0 if not. (we can take a fraction of the latest item put in the knapsack when
+    // we exceed the capacity of the knapsack
 
-    cout << "Etape 0" << endl;
+    // OUTPUTS
+    double residualCapacity = max_Weight ; // capacity still free with the items in the knapsack
+    // (max_Weight - current weight of the knapsack)
+    double totalValue = 0; //sum of values of the items which are in the knapsack
 
-    double z = 0; //servira pour l'étape 4 de l'algorithme
-
-    double residualCapacity = max_Weight ; // représente la capacité résiduelle
-    double totalValue = 0; //value of the Knapsack
+    // Begin of the algorithm
     for(int i=0; i<d.getNbClasses(); i++){
-        // Etape 1 : construction des enveloppes convexes
 
+        // Etape 1 : construction of upper bound in each class
         R.push_back((d[i])->upperBound());
-        // Etape 2 : construction de p et w
 
+        // Etape 2 : construction of efficacity vector
         for(unsigned int j=1; j<R[i].getNbItems(); j++){
-            R[i].sortItemsWeight();
+            // R[i] is already sorted by increasing weights because of we sorted classes[i] before deriving the upper
+            // bound of this class
+            double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue(); // value[i][j] - value[i][j-1]
+            double diff_w = R[i][j]->getWeight() - R[i][j-1]->getWeight(); // weight[i][j] - weight[i][j-1]
+            // We can't stock thoses numbers for each i and j (as describe in the algorithm) because of a lack of memory
 
-            double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue();
-            double diff_w = R[i][j]->getWeight() - R[i][j-1]->getWeight();
-            pairItem.push_back(make_pair(R[i][j],diff_p/diff_w));
+            pairItem.push_back(make_pair(R[i][j],diff_p/diff_w)); // we stock each Item with its efficacity (we don't
+            // care about their Class, we'll sort them according to decreasing efficacity thanks to @AideTri)
             inKnapsack[i].push_back(0);
         }
+
+        // At the beginning, we put the lightest items of each upper bound in the knapsack
         residualCapacity -= ((R[i])[0])->getWeight();
-        z += (R[i][0])->getValue();
+        totalValue += (R[i][0])->getValue();
 
     }
 
-    cout << "Etape 2" << endl;
     // Etape 3
-    // sorting items (in each class) according to decreasing p/w
-    sort(pairItem.begin(),pairItem.end());
+    sort(pairItem.begin(),pairItem.end()); // sorting items (in each class) according to decreasing p/w (efficacity)
 
     for (unsigned int l = 0;l<pairItem.size();l++){
 
-        //on cherche la classe de l'item
+        // we're looking for the Class of the l-th item
         for(unsigned int i=0; i<R.size(); i++){
 
             for(unsigned int j=0; j<(R[i].getNbItems()); j++){
