@@ -47,4 +47,20 @@ class Dataset {
 		void affiche() const;
 };
 
+class Pair {
+	private:
+		int classIndex;
+		Item* item0;
+		Item* item1;
+		double slope;
+		bool dominated;
+		bool swapped;
+	public:
+		Pair(int, Item*, Item*);
+		bool hasDominance();
+		bool hasSwapped();
+		double getSlope();
+		int getClassIndex();
+};
+
 pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight);

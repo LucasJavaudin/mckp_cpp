@@ -139,3 +139,17 @@ void Dataset::affiche() const {
     }
 }
 vector<Class*> Dataset::getClasses() const { return classes; }
+
+/*
+Pair::Pair(int i, Item* j, Item* k) {
+	classIndex = i;
+	item0 = j;
+	item1 = k;
+	if ( item0->getWeight() < item1->getWeight() && item0->getValue() >= item1->getValue()) {
+		dominated = true;
+	} else if ( item0->getWeight() == item1->getWeight() ) {
+		if ( item0->getValue() >= item1->getValue() )
+	}
+
+}
+*/
