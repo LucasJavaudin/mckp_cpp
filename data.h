@@ -33,6 +33,8 @@ class Class {
 		void sortItemsWeight();
 		void affiche() const;
 		Class upperBound();
+		double getMinWeight();
+		double getMaxWeight();
 };
 
 class Dataset {
@@ -40,18 +42,23 @@ class Dataset {
 		vector<Class*> classes;
 	public:
 		Dataset(int, int, lognormal_distribution<double>, lognormal_distribution<double>, default_random_engine);
+		Dataset(vector< vector< vector<double> > >);
 		~Dataset();
 		Class* operator[](int);
 		int getNbClasses() const;
 		vector<Class*> getClasses() const;
 		void affiche() const;
+		double getMinWeight();
+		double getMaxWeight();
 };
 
 class Pair {
 	private:
 		int classIndex;
-		Item* item0;
-		Item* item1;
+		double v0;
+		double v1;
+		double w0;
+		double w1;
 		double slope;
 		bool dominated;
 		bool swapped;
@@ -62,5 +69,3 @@ class Pair {
 		double getSlope();
 		int getClassIndex();
 };
-
-pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight);

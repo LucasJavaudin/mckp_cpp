@@ -106,6 +106,32 @@ Class Class::upperBound(){
     return upperB;
 }
 
+double Class::getMinWeight() {
+	double m = items[0]->getWeight();
+	int nbItems = items.size();
+	if ( nbItems > 1 ) {
+		for (int j = 1; j<nbItems; j++) {
+			if ( items[j]->getWeight() < m ) {
+				m = items[j]->getWeight();
+			}
+		}
+	}
+	return m;
+}
+
+double Class::getMaxWeight() {
+	double m = items[0]->getWeight();
+	int nbItems = items.size();
+	if ( nbItems > 1 ) {
+		for (int j = 1; j<nbItems; j++) {
+			if ( items[j]->getWeight() > m ) {
+				m = items[j]->getWeight();
+			}
+		}
+	}
+	return m;
+}
+
 Dataset::Dataset(int nbClasses, int nbItems, lognormal_distribution<double> value_distribution, lognormal_distribution<double> weight_distribution, default_random_engine generator) {
 	for ( int i=0; i<nbClasses; i++ ) {
 		// For each class, generate a random vector of values and a random vector of weights.
@@ -123,10 +149,37 @@ Dataset::Dataset(int nbClasses, int nbItems, lognormal_distribution<double> valu
 	}
 }
 
+Dataset::Dataset(vector< vector< vector<double> > > datasetValues) {
+	// Create a dataset from a three-dimension vector.
+	// For each class, there are two vectors: a vector with the values and a vector with the weights.
+	int nbClasses = datasetValues.size();
+	for (int i = 0; i<nbClasses; i++) {
+		classes.push_back( new Class(datasetValues[i][0], datasetValues[i][1]) );
+	}
+}
+
 Dataset::~Dataset() {
     for(Class* c : classes){
         delete c;
     }
+}
+
+double Dataset::getMinWeight() {
+	double sum = 0;
+	for (int i = 0; i<classes.size(); i++) {
+		Class* currentClass = classes[i];
+		sum += currentClass->getMinWeight();
+	}
+	return sum;
+}
+
+double Dataset::getMaxWeight() {
+	double sum = 0;
+	for (int i = 0; i<classes.size(); i++) {
+		Class* currentClass = classes[i];
+		sum += currentClass->getMaxWeight();
+	}
+	return sum;
 }
 
 Class* Dataset::operator[](int i) { return classes[i]; }
@@ -140,16 +193,45 @@ void Dataset::affiche() const {
 }
 vector<Class*> Dataset::getClasses() const { return classes; }
 
-/*
 Pair::Pair(int i, Item* j, Item* k) {
 	classIndex = i;
-	item0 = j;
-	item1 = k;
-	if ( item0->getWeight() < item1->getWeight() && item0->getValue() >= item1->getValue()) {
+	v0 = j->getValue();
+	v1 = k->getValue();
+	w0 = j->getWeight();
+	w1 = k->getWeight();
+	dominated = false;
+	swapped = false;
+	if ( domine(j, k) ) {
+		// j dominates k.
 		dominated = true;
-	} else if ( item0->getWeight() == item1->getWeight() ) {
-		if ( item0->getValue() >= item1->getValue() )
+	} else if ( domine(k, j) ) {
+		// k dominates j.
+		dominated = true;
+		swapped = true;
+	} else if ( w0 > w1 ) {
+		// Item j has more weight, reverse the pair.
+		swapped = true;
 	}
-
+	// Slope is 0 if it is not computed yet.
+	slope = 0;
 }
-*/
+
+bool Pair::hasDominance() {
+	return dominated;
+}
+
+bool Pair::hasSwapped() {
+	return swapped;
+}
+
+double Pair::getSlope() {
+	if ( slope == 0 ) {
+		// Compute slope.
+		slope = (v1 - v0) / (w1 - w0);
+	}
+	return slope;
+}
+
+int Pair::getClassIndex() {
+	return classIndex;
+}
