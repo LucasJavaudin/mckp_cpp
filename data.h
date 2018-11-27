@@ -16,8 +16,9 @@ class Item {
 		double getWeight()const ;
 		int getIndex()const ;
 		static int getCreatedItems() ;
-		bool operator=(const Item item);
-        void affiche() const;
+		bool operator==(const Item item);
+		bool operator!=(const Item item);
+        	void affiche() const;
 };
 
 class Class {
@@ -35,6 +36,7 @@ class Class {
 		Class upperBound();
 		double getMinWeight();
 		double getMaxWeight();
+		pair<Item*,double> mostEfficientReplacer(const Item*) const;
 };
 
 class Dataset {
