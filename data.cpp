@@ -22,7 +22,8 @@ double Item::getValue() const{ return value; }
 double Item::getWeight() const{ return weight; }
 int Item::getIndex()const { return index; }
 int Item::getCreatedItems() { return createdItems; }
-bool Item::operator=(const Item item){ return index==item.getIndex(); }
+bool Item::operator==(const Item item){ return index==item.getIndex(); }
+bool Item::operator!=(const Item item){ return index!=item.getIndex(); }
 void Item::affiche() const { cout << "Item " << index << ", poids " << weight << ", value " << value <<endl;}
 
 // Si les poids sont égaux, renvoie true si la valeur du premier est supérieure à celle du deuxième
@@ -130,6 +131,31 @@ double Class::getMaxWeight() {
 		}
 	}
 	return m;
+}
+
+//Peut-être à reprendre, voir comment choisir si deux efficacité sont les mêmes
+// Returns an Item of the Class, which is the most efficient replacer, i.e argmax { [value(i)-value(it)] / [weight(i)-weight(it)])
+// where i is in the vector of Items of Class, and i is different from it
+pair<Item*,double> Class::mostEfficientReplacer(const Item* it) const{
+    Item* res = nullptr;
+    double maxEfficiency = 0; // just for the initialization, no importance of the value
+    for(Item* i : getItems()){
+        if((*i)!=(*it)){
+
+            double newEfficiency = (i->getValue() - it->getValue())/(i->getWeight() - it->getWeight());
+            if(res!=nullptr){ // if res already points toward an Item of the class
+                if(maxEfficiency<newEfficiency){
+                    maxEfficiency = newEfficiency ;
+                    res=i;
+                }
+            }else{
+                res = i;
+                maxEfficiency = newEfficiency ;
+            }
+
+        }
+    }
+    return make_pair(res,maxEfficiency); // if res equals nullptr, then @it is alone in the class
 }
 
 Dataset::Dataset(int nbClasses, int nbItems, lognormal_distribution<double> value_distribution, lognormal_distribution<double> weight_distribution, default_random_engine generator) {
