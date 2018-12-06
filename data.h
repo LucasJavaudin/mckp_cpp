@@ -45,6 +45,7 @@ class Dataset {
 	public:
 		Dataset(int, int, lognormal_distribution<double>, lognormal_distribution<double>, default_random_engine);
 		Dataset(vector< vector< vector<double> > >);
+		Dataset::Dataset(vector<Class*>);
 		~Dataset();
 		Class* operator[](int);
 		int getNbClasses() const;
