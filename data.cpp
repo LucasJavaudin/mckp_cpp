@@ -184,6 +184,8 @@ Dataset::Dataset(vector< vector< vector<double> > > datasetValues) {
 	}
 }
 
+Dataset::Dataset(vector<Class*> c) : classes(c) {}
+
 Dataset::~Dataset() {
     for(Class* c : classes){
         delete c;
