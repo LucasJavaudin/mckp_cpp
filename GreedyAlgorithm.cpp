@@ -6,6 +6,14 @@
 
 using namespace std;
 
+struct aideTri
+{
+    int operator()(const pair<Item*,double> p1,const pair<Item* , double> p2) const
+        {
+            return p1.second > p2.second;
+        }
+};
+
 pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
     vector<Class> R; // @R va contenir les enveloppes convexes de chaque classes
     vector<pair<Item*,double>> pairItem;
@@ -50,14 +58,15 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
 
         // At the beginning, we put the lightest items of each upper bound in the knapsack
         residualCapacity -= ((R[i])[0])->getWeight();
+        cout << ((R[i])[0])->getValue() << "  " << ((R[i])[0])->getWeight() << endl;
         totalValue += (R[i][0])->getValue();
-
     }
+
 
 #ifdef VERBOSE
         cout << "STEP 3... " << endl;
 #endif
-    sort(pairItem.begin(),pairItem.end()); // sorting items (in each class) according to decreasing p/w (efficacity)
+    sort(pairItem.begin(),pairItem.end(),aideTri()); // sorting items (in each class) according to decreasing p/w (efficacity)
 
     for (unsigned int l = 0;l<pairItem.size();l++){
 
@@ -74,6 +83,7 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
                     double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue();
                     if(diff_w<=residualCapacity){
                         //Actualisation
+                        cout << i+1 << "   " << j+1;
                         inKnapsack[i][j] = 0;
                         inKnapsack[i][j-1] = 1;
                         residualCapacity -= diff_w;
@@ -84,6 +94,7 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
 #endif
                         inKnapsack[i][j] = residualCapacity/diff_w;
                         inKnapsack[i][j-1] = 1 - residualCapacity/diff_w;
+                        residualCapacity = 0;
                         totalValue += diff_p*inKnapsack[i][j];
                     }
                 }
@@ -95,11 +106,3 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
 
     return make_pair(residualCapacity,totalValue);
 }
-
-struct aideTri
-{
-    int operator()(const pair<Item*,double> p1,const pair<Item* , double> p2) const
-        {
-            return p1.second <p2.second;
-        }
-};
