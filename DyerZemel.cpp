@@ -48,7 +48,6 @@ pair <double, Allocation> DyerZemelAlgorithm(Dataset* data, double capacity) {
 		items.push_back(item);
 	}
 	Allocation allocation(items);
-	allocation.affiche();
 
 	while ( true ) {
 
