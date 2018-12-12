@@ -72,12 +72,17 @@ int main() {
 	*/
 
 	// Test Dyer-Zemel.
+	data.affiche();
 	double minWeight = data.getMinWeight();
 	double maxWeight = data.getMaxWeight();
-	double capacity = minWeight + 1.0;
+	double capacity = (maxWeight + minWeight) / 2;
 	if ( capacity > minWeight && capacity < maxWeight ) {
-		double optSlope = DyerZemelAlgorithm(data, capacity);
-		cout << "Optimal slope is " + to_string(optSlope) << endl;
+		pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
+		double optimalSlope = resultPair.first;
+		Allocation optimalAllocation = resultPair.second;
+		cout << "Optimal slope is " + to_string(optimalSlope) << endl;
+		//cout << "Optimal allocation is:" << endl;
+		//optimalAllocation.affiche();
 	} else {
 		cout << "Capacity is not compatible with dataset." << endl;
 	}

@@ -17,7 +17,7 @@ double getMedian(vector<double> v) {
 	return v[n];
 }
 
-double DyerZemelAlgorithm(Dataset data, double capacity) {
+pair <double, Allocation> DyerZemelAlgorithm(Dataset* data, double capacity) {
 	// === Initialization ===
 #ifdef VERBOSE
 	cout << "Initialization..." << endl;
@@ -26,8 +26,8 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 	// Create a vector of vectors to store the indices of the remaining items.
 	vector<vector<int>> remainingItems;
 	// Store the indices of all items in the dataset.
-	for (int i = 0; i<data.getNbClasses(); i++) {
-		Class* currentClass = data[i];
+	for (unsigned int i = 0; i<data->getNbClasses(); i++) {
+		Class* currentClass = (*data)[i];
 		vector<int> indices;
 		for (int j = 0; j<currentClass->getNbItems(); j++) {
 			indices.push_back(j);
@@ -37,7 +37,18 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 
 	// Create a vector to store the fathom classes.
 	// Value is true if the class has been fathom (all values are false by default).
-	vector<bool> fathomClass(data.getNbClasses(), false);
+	vector<bool> fathomClass(data->getNbClasses(), false);
+
+	// Create an allocation of items.
+	// By default, we choose the first item in each class.
+	vector<Item*> items;
+	for (unsigned int i = 0; i<data->getNbClasses(); i++) {
+		Class* currentClass = (*data)[i];
+		Item* item = (*currentClass)[0];
+		items.push_back(item);
+	}
+	Allocation allocation(items);
+	allocation.affiche();
 
 	while ( true ) {
 
@@ -51,12 +62,12 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 #endif
 		// Pair the items in each class two by two.
 		vector<Pair> pairs;
-		for (int i = 0; i<data.getNbClasses(); i++) {
+		for (int i = 0; i<data->getNbClasses(); i++) {
 			if (not fathomClass[i]) {
 #ifdef ULTRA_VERBOSE
 				cout << "Creating pairs for class " + to_string(i) << endl;
 #endif
-				Class* currentClass = data[i];
+				Class* currentClass = (*data)[i];
 				int nbPaired = 0;
 				int nbNotPaired = remainingItems[i].size();
 				while (nbNotPaired >= 2) {
@@ -104,7 +115,7 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 #ifdef VERBOSE
 		cout << "STEP 2..." << endl;
 #endif
-		for (int i = 0; i<data.getNbClasses(); i++) {
+		for (int i = 0; i<data->getNbClasses(); i++) {
 			if (not fathomClass[i]) {
 				int nbRemainingItems = remainingItems[i].size();
 				if (nbRemainingItems > 1) {
@@ -115,9 +126,11 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 #endif
 					// There is only one item left, this is the item chosen.
 					// Decreases capacity by the weight of the item.
-					Class* currentClass = data[i];
+					Class* currentClass = (*data)[i];
 					Item* lastItem = (*currentClass)[remainingItems[i][0]];
 					capacity -= lastItem->getWeight();
+					// Change optimal allocation.
+					allocation.changeItem(i, lastItem);
 					// Fathom the class.
 					fathomClass[i] = true;
 				} else {
@@ -138,6 +151,10 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 			Pair pair = pairs[p];
 			slopes.push_back( pair.getSlope() );
 		}
+		if ( slopes.size() == 0 ) {
+			// All clases are fathom, return the current allocation.
+			return make_pair(-1.0, allocation);
+		}
 		double alpha = getMedian(slopes);
 #ifdef VERBOSE
 		cout << "Median slope is " + to_string(alpha) << endl;
@@ -150,7 +167,7 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 		// Compute the two sums of equation (11.11).
 		double minSum = 0;
 		double maxSum = 0;
-		for (int i = 0; i<data.getNbClasses(); i++) {
+		for (int i = 0; i<data->getNbClasses(); i++) {
 			if (not fathomClass[i]) {
 				double maxValue = - INT_MAX;
 				double maxWeight = - INT_MAX;
@@ -158,7 +175,7 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 				int nbItems = remainingItems[i].size();
 				for (int j = 0; j<nbItems; j++) {
 					int ij = remainingItems[i][j];
-					Class* currentClass = data[i];
+					Class* currentClass = (*data)[i];
 					Item* item = (*currentClass)[ij];
 					double v = item->getValue();
 					double w = item->getWeight();
@@ -167,11 +184,13 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 					if (value > maxValue+.000001) {
 						maxValue = value;
 						maxWeight = minWeight = w;
+						allocation.changeItem(i, item);
 					} else if (value >= maxValue-.000001) {
 						if (w > maxWeight) {
 							maxWeight = w;
 						} else if (w < minWeight) {
 							minWeight = w;
+							allocation.changeItem(i, item);
 						}
 					}
 				}
@@ -191,12 +210,12 @@ double DyerZemelAlgorithm(Dataset data, double capacity) {
 #endif
 		if (capacity+0.000001 >= minSum && capacity-0.000001 < maxSum) {
 			// alpha is the optimal slope.
-			return alpha;
+			return make_pair(alpha, allocation);
 		} else {
 			// Keep track of the number of items erased in each class.
-			vector<int> nbErased(data.getNbClasses(), 0);
+			vector<int> nbErased(data->getNbClasses(), 0);
 			// Keep track of the number of pairs in each class.
-			vector<int> nbPairs(data.getNbClasses(), 0);
+			vector<int> nbPairs(data->getNbClasses(), 0);
 			if (minSum > capacity) {
 				for (int p = 0; p<pairs.size(); p++) {
 					Pair pair = pairs[p];

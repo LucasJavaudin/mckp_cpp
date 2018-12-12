@@ -186,7 +186,7 @@ Class* Dataset::operator[](int i) { return classes[i]; }
 int Dataset::getNbClasses() const{ return classes.size(); }
 void Dataset::affiche() const {
     for(unsigned int i=0; i < classes.size() ;i++) {
-        cout << "Classe " <<i+1 << " :" << endl;
+        cout << "Class " <<i+1 << " :" << endl;
         classes[i]->affiche();
         cout << endl ;
     }
@@ -234,4 +234,37 @@ double Pair::getSlope() {
 
 int Pair::getClassIndex() {
 	return classIndex;
+}
+
+Allocation::Allocation(vector<Item*> items) : items(items) {}
+
+Item* Allocation::operator[](int i) {
+	return items[i];
+}
+
+void Allocation::changeItem(int classIndex, Item* newItem) {
+	items[classIndex] = newItem;
+}
+
+void Allocation::affiche() {
+	for(unsigned int i=0; i < items.size() ;i++) {
+		cout << "Class " <<i+1 << " :" << endl;
+		items[i]->affiche();
+	}
+}
+
+double Allocation::getWeight() {
+	double w = 0;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		w += items[i]->getWeight();
+	}
+	return w;
+}
+
+double Allocation::getValue() {
+	double v = 0;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		v += items[i]->getValue();
+	}
+	return v;
 }

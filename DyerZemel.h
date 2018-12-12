@@ -2,5 +2,5 @@
 
 using namespace std;
 
-double DyerZemelAlgorithm(Dataset, double);
+pair <double, Allocation> DyerZemelAlgorithm(Dataset*, double);
 double getMedian(vector<double>);

@@ -69,3 +69,15 @@ class Pair {
 		double getSlope();
 		int getClassIndex();
 };
+
+class Allocation {
+	private:
+		vector<Item*> items;
+	public:
+		Allocation(vector<Item*>);
+		Item* operator[](int);
+		void changeItem(int, Item*);
+		void affiche();
+		double getWeight();
+		double getValue();
+};
