@@ -16,8 +16,9 @@ class Item {
 		double getWeight()const ;
 		int getIndex()const ;
 		static int getCreatedItems() ;
-		bool operator=(const Item item);
-        void affiche() const;
+		bool operator==(const Item item);
+		bool operator!=(const Item item);
+        	void affiche() const;
 };
 
 class Class {
@@ -35,6 +36,7 @@ class Class {
 		Class upperBound();
 		double getMinWeight();
 		double getMaxWeight();
+		pair<Item*,double> mostEfficientReplacer(const Item*) const;
 };
 
 class Dataset {
@@ -43,6 +45,7 @@ class Dataset {
 	public:
 		Dataset(int, int, lognormal_distribution<double>, lognormal_distribution<double>, default_random_engine);
 		Dataset(vector< vector< vector<double> > >);
+		Dataset::Dataset(vector<Class*>);
 		~Dataset();
 		Class* operator[](int);
 		int getNbClasses() const;
