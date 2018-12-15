@@ -37,6 +37,8 @@ class Class {
 		double getMinWeight();
 		double getMaxWeight();
 		pair<Item*,double> mostEfficientReplacer(const Item*) const;
+		Class eliminateDominatedItems();
+		void deleteItem(int);
 };
 
 class Dataset {
