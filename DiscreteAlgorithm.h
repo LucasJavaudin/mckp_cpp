@@ -2,4 +2,4 @@
 
 using namespace std;
 
-vector<Item*> MCKP_Discrete_Algorithm(Dataset, double);
+Allocation MCKP_Discrete_Algorithm(Dataset, double);
