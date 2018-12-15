@@ -6,6 +6,7 @@
 #include "data.h"
 #include "GreedyAlgorithm.h"
 #include "DyerZemel.h"
+#include "DiscreteAlgorithm.h"
 
 using namespace std;
 
