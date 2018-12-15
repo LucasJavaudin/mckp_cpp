@@ -5,7 +5,7 @@
 
 using namespace std;
 
-vector<Item*> MCKP_Discrete_Algorithm(Dataset d, double max_Weight){
+Allocation MCKP_Discrete_Algorithm(Dataset d, double max_Weight){
     vector<Item*> inKnapSack; // one item by class, returns a vector because we can't return an array
     pair<Item*,double> bestChangerByClass[d.getNbClasses()]; // contains the most efficient replacement in each class for items in the knapsack
     double residualCapacity=max_Weight;
@@ -78,5 +78,5 @@ vector<Item*> MCKP_Discrete_Algorithm(Dataset d, double max_Weight){
             cout << "TOTAL WEIGHT : " << max_Weight - residualCapacity << " ON " << max_Weight << endl;
             cout << "TOTAL VALUE : " << totalValue << endl;
 #endif
-    return inKnapSack;
+    return Allocation(inKnapSack);
 }
