@@ -133,8 +133,31 @@ double Class::getMaxWeight() {
 	return m;
 }
 
+Class Class::eliminateDominatedItems() {
+    sortItemsWeight();
+    vector<Item*> res;
+    res.push_back(items[0]);
+
+    for (int k=1; k<getNbItems(); k++){
+        bool estDomine = false;
+        int j=0;
+        while(!estDomine && j<k){
+            estDomine = domine(items[j],items[k]);
+            j++;
+        }
+        if(!estDomine) res.push_back(items[k]);
+
+    }
+    Class c(res);
+    return c;
+}
+
+void Class::deleteItem(int ind) {
+    items.erase(items.begin() + ind);
+}
+
 //Peut-être à reprendre, voir comment choisir si deux efficacité sont les mêmes
-// Returns an Item of the Class, which is the most efficient replacer, i.e argmax { [value(i)-value(it)] / [weight(i)-weight(it)])
+// returns an Item of the Class, which is the most efficient replacer, i.e argmax { [value(i)-value(it)] / [weight(i)-weight(it)])
 // where i is in the vector of Items of Class, and i is different from it
 pair<Item*,double> Class::mostEfficientReplacer(const Item* it) const{
     Item* res = nullptr;
