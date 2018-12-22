@@ -212,6 +212,14 @@ double Dataset::getMaxWeight() {
 
 Class* Dataset::operator[](int i) { return classes[i]; }
 int Dataset::getNbClasses() const{ return classes.size(); }
+vector<int> Dataset::getNbItemsByClass() const{ 
+	vector<int> nbItemsByClass;
+	for (unsigned int i = 0; i < data.getNbClasses(); i++) {
+		Class* currentClass = classes[i];
+		nbItemsByClass.push_back( currentClass->getNbItems() );
+	}
+	return nbItemsByClass;
+}
 void Dataset::affiche() const {
     for(unsigned int i=0; i < classes.size() ;i++) {
         cout << "Class " <<i+1 << " :" << endl;

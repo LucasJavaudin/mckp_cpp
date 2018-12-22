@@ -49,6 +49,7 @@ class Dataset {
 		~Dataset();
 		Class* operator[](int);
 		int getNbClasses() const;
+		vector<int> getNbItemsByClass() const;
 		vector<Class*> getClasses() const;
 		void affiche() const;
 		double getMinWeight();
@@ -81,6 +82,17 @@ class Allocation {
 		Item* operator[](int);
 		void changeItem(int, Item*);
 		void affiche();
+		double getWeight();
+		double getValue();
+};
+
+class IndexAllocation {
+	private:
+		vector<int> itemIndexes;
+	public:
+		IndexAllocation(vector<int>);
+		IndexAllocation(int, int);
+		int operator[](int);
 		double getWeight();
 		double getValue();
 };
