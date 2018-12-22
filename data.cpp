@@ -10,7 +10,7 @@ using namespace std;
 
 int Item::createdItems=0;
 
-Item::Item(double p, double w, int i) : value(p), weight(w), index(i)
+Item::Item(double p, double w) : value(p), weight(w)
 {
     ++createdItems;
     index = createdItems;
@@ -60,7 +60,7 @@ Class::Class(vector<double> values, vector<double> weights) {
 	// Create a class of items from the vector of values and weigths of the items.
 	int nbItems = min( values.size(), weights.size() );
 	for ( int j=0; j<nbItems; j++ ) {
-		items.push_back( new Item(values[j], weights[j], j) );
+		items.push_back( new Item(values[j], weights[j]) );
 	}
 }
 
@@ -316,6 +316,42 @@ double Allocation::getValue() {
 	double v = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		v += items[i]->getValue();
+	}
+	return v;
+}
+
+WeightedAllocation::WeightedAllocation(vector<Item*>items,vector<double>proportions):Allocation(items),proportions(proportions){}
+
+void WeightedAllocation::affiche() {
+	for(unsigned int i=0; i < items.size() ;i++) {
+        cout << "Class " <<i+1 << " :" << endl;
+
+        if(proportions[i]==1){
+            items[i]->affiche();
+        }else { // in this case, the last element of the list belongs to the same class than the current item
+            if(i!=items.size()){ // allows us not to show the class of the items twice
+                cout << "Item " << items[i]->getIndex() << ", poids " << items[i]->getWeight() << ", value " << items[i]->getValue() << " et proportion " << proportions[i] << endl;
+                cout << "et" << endl;
+                cout << "Item " << items[i]->getIndex() << ", poids " << items.back()->getWeight() << ", value " << items.back()->getValue() << " et proportion " << proportions.back() << endl;
+            }
+        }
+
+
+	}
+}
+
+double WeightedAllocation::getWeight() {
+	double w = 0;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		w += items[i]->getWeight() * proportions[i];
+	}
+	return w;
+}
+
+double WeightedAllocation::getValue() {
+	double v = 0;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		v += items[i]->getValue() * proportions[i];
 	}
 	return v;
 }
