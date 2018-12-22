@@ -1,0 +1,60 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+
+\title{Projet C++ : problème du sac à dos à choix multiple et politique d'incitations}
+\author{\textsc{Javaudin} Lucas, \textsc{Le Rest} François}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+En recherche opérationnelle, le problème du sac à dos\footnote{Voir \url{en.wikipedia.org/wiki/Knapsack_problem}} est un problème d'optimisation dont l'objectif est de maximiser la valeur des objets que l'on insère dans un sac qui ne peut pas supporter plus d'un certain poids.
+
+Nous étudions ici une variante du problème du sac à dos : le problème du sac à dos à choix multiple ou \textit{multiple choice knapsack problem} (MCKP).
+Dans le MCKP, les objets sont regroupés en plusieurs classes et le sac à dos doit être rempli avec un et un seul objet de chaque classe.
+
+Le MCKP est un problème NP-complet.
+Nous proposons plusieurs algorithmes qui donnent une approximation de la solution optimale.
+Plus précisément, les solutions proposées par ces algorithmes sont réalisables et leur distance par rapport à la solution optimale est bornée.
+
+Enfin, nous montrons que le problème du sac à dos à choix multiple est équivalent au problème consistant à trouver la politique d'incitations maximisant l'utilité sociale, lorsque les individus font face à un choix discret et lorsque le budget de la politique est contraint.
+
+\section{Algorithmes}
+% On peut mettre ici un pseudo-code des algorithmes que l'on a codé.
+
+\subsection{Recherche exhaustive}
+
+\subsection{Algorithme Greedy simple}
+
+\subsection{Algorithme Greedy avec enveloppe convexe}
+
+\subsection{Algorithme Dyer-Zemel}
+
+\section{Structure du code}
+% On peut mettre ici un diagramme de classe UML et une présentation des fichiers avec leur contenu.
+
+\section{Application économique}
+% Je vais ici parler de l'application du MCKP à une politique d'incitation.
+
+\section{Références}
+
+\begin{thebibliography}{9}
+\bibitem{Knapsack2004}
+  Hans Kellerer, Ulrich Pferschy and David Pisinger,
+  \textit{Knapsack problems},
+  Springer,
+  2004.
+\end{thebibliography}
+
+\end{document}
