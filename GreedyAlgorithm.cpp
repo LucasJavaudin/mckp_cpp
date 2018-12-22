@@ -84,6 +84,7 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
                     double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue();
                     if(diff_w<=residualCapacity){
                         //Actualisation
+                        cout << "Item " << j+1 << " of class " << i+1 << " is replaced" << endl;
                         residualCapacity -= diff_w;
                         totalValue += diff_p;
                         choosenItems[i] = R[i][j]; // we take it entirely
@@ -91,6 +92,7 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
 #ifdef VERBOSE
                         cout << "STEP 5..." << endl;
 #endif
+                        cout << "Knapsack too heavy : last item to be replaced (proportionally) is " << j+1 << " of class " << i+1 << endl;
                         proportion[i]= residualCapacity/diff_w ;
                         choosenItems.push_back(R[i][j]);
                         proportion.push_back(residualCapacity/diff_w);
@@ -104,6 +106,7 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
         l++;
     }
 
+
+    //return make_pair(residualCapacity,totalValue);
     return make_pair(Allocation(choosenItems),proportion);
 }
-
