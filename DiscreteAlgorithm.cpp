@@ -17,7 +17,7 @@ Allocation MCKP_Discrete_Algorithm(Dataset d, double max_Weight){
 
     vector<Class> withoutDominatedItems;
 
-    for(unsigned int i=0;i<d.getNbClasses();i++){
+    for(int i=0;i<d.getNbClasses();i++){
         //we're going to eliminate all dominated items
         Class *c = new Class(d[i]->eliminateDominatedItems());
         withoutDominatedItems.push_back(*c) ;
@@ -51,20 +51,21 @@ Allocation MCKP_Discrete_Algorithm(Dataset d, double max_Weight){
         // We change
         double diff_weight = replacer.first->getWeight() - inKnapSack[classReplaced]->getWeight();
         double diff_value = replacer.first->getValue() - inKnapSack[classReplaced]->getValue();
+
+        cout << endl;
         if(diff_weight<=residualCapacity & bestChangerByClass[classReplaced].second>0){
 
             for(unsigned int ind=0; ind<withoutDominatedItems[classReplaced].getNbItems(); ind++){
                 if(*inKnapSack[classReplaced]==(*withoutDominatedItems[classReplaced][ind])){
                     withoutDominatedItems[classReplaced].deleteItem(ind);
                 }
-                cout << inKnapSack[classReplaced]->getIndex() << " VS " << withoutDominatedItems[classReplaced][ind]->getIndex()<< endl;
             }
 
             inKnapSack[classReplaced] = replacer.first;
             totalValue = totalValue + diff_value;
             residualCapacity = residualCapacity - diff_weight; // we update the weight still free
             bestChangerByClass[classReplaced] = withoutDominatedItems[classReplaced].mostEfficientReplacer(replacer.first); //we update the best replacer in the class in which we removed the item
-            cout << "classe replaced : " << classReplaced+1 << endl;
+            cout << "Class replaced is " << classReplaced+1 << endl;
 #ifdef ULTRA_VERBOSE
             cout << "Item " << replacer->getIndex() << " in class " << classReplaced << " is removed"<< endl;
 #endif
