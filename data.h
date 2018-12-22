@@ -10,7 +10,7 @@ class Item {
 		int index;
 		static int createdItems;
 	public:
-		Item(double, double, int);
+		Item(double, double);
 		~Item();
 		double getValue()const ;
 		double getWeight()const ;
@@ -34,9 +34,11 @@ class Class {
 		void sortItemsWeight();
 		void affiche() const;
 		Class upperBound();
-		double getMinWeight();
-		double getMaxWeight();
+		double getMinWeight() const;
+		double getMaxWeight() const;
 		pair<Item*,double> mostEfficientReplacer(const Item*) const;
+		Class eliminateDominatedItems();
+		void deleteItem(int);
 };
 
 class Dataset {
@@ -52,8 +54,8 @@ class Dataset {
 		vector<int> getNbItemsByClass() const;
 		vector<Class*> getClasses() const;
 		void affiche() const;
-		double getMinWeight();
-		double getMaxWeight();
+		double getMinWeight() const;
+		double getMaxWeight() const;
 };
 
 class Pair {
@@ -68,22 +70,32 @@ class Pair {
 		bool swapped;
 	public:
 		Pair(int, Item*, Item*);
-		bool hasDominance();
-		bool hasSwapped();
-		double getSlope();
-		int getClassIndex();
+		bool hasDominance() const;
+		bool hasSwapped() const;
+		double getSlope() ;
+		int getClassIndex() const;
 };
 
 class Allocation {
-	private:
+	protected:
 		vector<Item*> items;
 	public:
 		Allocation(vector<Item*>);
 		Item* operator[](int);
 		void changeItem(int, Item*);
-		void affiche();
-		double getWeight();
-		double getValue();
+		void affiche() const;
+		double getWeight() const;
+		double getValue() const;
+};
+
+class WeightedAllocation :public Allocation{
+    private :
+        vector<double> proportions;
+	public:
+		WeightedAllocation(vector<Item*>,vector<double>);
+		void affiche() const;
+		double getWeight() const;
+		double getValue() const;
 };
 
 class IndexAllocation {

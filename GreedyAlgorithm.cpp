@@ -14,19 +14,22 @@ struct aideTri
         }
 };
 
-pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
+pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
     vector<Class> R; // @R va contenir les enveloppes convexes de chaque classes
     vector<pair<Item*,double>> pairItem;
-    vector<vector<double>> inKnapsack(d.getNbClasses(),{1}); // vector : the  element [i][j] = 1 if the i-th item of
+
     // j-th class is in the knapsack, 0 if not. (we can take a fraction of the latest item put in the knapsack when
     // we exceed the capacity of the knapsack
+    vector<Item*> choosenItems;// i-th element is the item from the i-th class that we put in knapsack
+    vector<double> proportion; // j-th element is the proportion we took from each items, we just take two items not entirely
+
 
     // OUTPUTS
     double residualCapacity = max_Weight ; // capacity still free with the items in the knapsack
     // (max_Weight - current weight of the knapsack)
     double totalValue = 0; //sum of values of the items which are in the knapsack
 
-    // Begin of the algorithm
+    // Beginning of the algorithm
 #ifdef VERBOSE
         cout << "STEP 1 AND 2..." << endl;
 #endif
@@ -38,7 +41,8 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
 #endif
 
         R.push_back((d[i])->upperBound());
-
+        proportion.push_back(1);
+        choosenItems.push_back(R[i][0]);
         // Etape 2 : construction of efficacity vector
 #ifdef ULTRA_VERBOSE
         cout << "Building of efficacity vector : PART"<< to_string(i) << "..." << endl;
@@ -53,12 +57,10 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
 
             pairItem.push_back(make_pair(R[i][j],diff_p/diff_w)); // we stock each Item with its efficacity (we don't
             // care about their Class, we'll sort them according to decreasing efficacity thanks to @AideTri)
-            inKnapsack[i].push_back(0);
         }
 
         // At the beginning, we put the lightest items of each upper bound in the knapsack
         residualCapacity -= ((R[i])[0])->getWeight();
-        cout << ((R[i])[0])->getValue() << "  " << ((R[i])[0])->getWeight() << endl;
         totalValue += (R[i][0])->getValue();
     }
 
@@ -67,9 +69,8 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
         cout << "STEP 3... " << endl;
 #endif
     sort(pairItem.begin(),pairItem.end(),aideTri()); // sorting items (in each class) according to decreasing p/w (efficacity)
-
-    for (unsigned int l = 0;l<pairItem.size();l++){
-
+    unsigned int l=0;
+    while(l<pairItem.size()&&residualCapacity>0){
         // we're looking for the Class of the l-th item
 #ifdef VERBOSE
         cout << "STEP 4..."<< endl;
@@ -83,26 +84,29 @@ pair<double,double> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
                     double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue();
                     if(diff_w<=residualCapacity){
                         //Actualisation
-                        cout << i+1 << "   " << j+1;
-                        inKnapsack[i][j] = 0;
-                        inKnapsack[i][j-1] = 1;
+                        cout << "Item " << j+1 << " of class " << i+1 << " is replaced" << endl;
                         residualCapacity -= diff_w;
                         totalValue += diff_p;
+                        choosenItems[i] = R[i][j]; // we take it entirely
                     }else{
 #ifdef VERBOSE
                         cout << "STEP 5..." << endl;
 #endif
-                        inKnapsack[i][j] = residualCapacity/diff_w;
-                        inKnapsack[i][j-1] = 1 - residualCapacity/diff_w;
+                        cout << "Knapsack too heavy : last item to be replaced (proportionally) is " << j+1 << " of class " << i+1 << endl;
+                        proportion[i]= residualCapacity/diff_w ;
+                        choosenItems.push_back(R[i][j]);
+                        proportion.push_back(residualCapacity/diff_w);
                         residualCapacity = 0;
-                        totalValue += diff_p*inKnapsack[i][j];
+                        totalValue += diff_p*residualCapacity/diff_w;
                     }
                 }
 
             }
         }
-
+        l++;
     }
 
-    return make_pair(residualCapacity,totalValue);
+
+    //return make_pair(residualCapacity,totalValue);
+    return make_pair(Allocation(choosenItems),proportion);
 }

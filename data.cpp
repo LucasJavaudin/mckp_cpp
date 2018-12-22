@@ -10,7 +10,7 @@ using namespace std;
 
 int Item::createdItems=0;
 
-Item::Item(double p, double w, int i) : value(p), weight(w), index(i)
+Item::Item(double p, double w) : value(p), weight(w)
 {
     ++createdItems;
     index = createdItems;
@@ -60,7 +60,7 @@ Class::Class(vector<double> values, vector<double> weights) {
 	// Create a class of items from the vector of values and weigths of the items.
 	int nbItems = min( values.size(), weights.size() );
 	for ( int j=0; j<nbItems; j++ ) {
-		items.push_back( new Item(values[j], weights[j], j) );
+		items.push_back( new Item(values[j], weights[j]) );
 	}
 }
 
@@ -107,7 +107,7 @@ Class Class::upperBound(){
     return upperB;
 }
 
-double Class::getMinWeight() {
+double Class::getMinWeight()const {
 	double m = items[0]->getWeight();
 	int nbItems = items.size();
 	if ( nbItems > 1 ) {
@@ -120,7 +120,7 @@ double Class::getMinWeight() {
 	return m;
 }
 
-double Class::getMaxWeight() {
+double Class::getMaxWeight()const {
 	double m = items[0]->getWeight();
 	int nbItems = items.size();
 	if ( nbItems > 1 ) {
@@ -133,8 +133,31 @@ double Class::getMaxWeight() {
 	return m;
 }
 
+Class Class::eliminateDominatedItems() {
+    sortItemsWeight();
+    vector<Item*> res;
+    res.push_back(items[0]);
+
+    for (int k=1; k<getNbItems(); k++){
+        bool estDomine = false;
+        int j=0;
+        while(!estDomine && j<k){
+            estDomine = domine(items[j],items[k]);
+            j++;
+        }
+        if(!estDomine) res.push_back(items[k]);
+
+    }
+    Class c(res);
+    return c;
+}
+
+void Class::deleteItem(int ind) {
+    items.erase(items.begin() + ind);
+}
+
 //Peut-être à reprendre, voir comment choisir si deux efficacité sont les mêmes
-// Returns an Item of the Class, which is the most efficient replacer, i.e argmax { [value(i)-value(it)] / [weight(i)-weight(it)])
+// returns an Item of the Class, which is the most efficient replacer, i.e argmax { [value(i)-value(it)] / [weight(i)-weight(it)])
 // where i is in the vector of Items of Class, and i is different from it
 pair<Item*,double> Class::mostEfficientReplacer(const Item* it) const{
     Item* res = nullptr;
@@ -192,7 +215,7 @@ Dataset::~Dataset() {
     }
 }
 
-double Dataset::getMinWeight() {
+double Dataset::getMinWeight() const{
 	double sum = 0;
 	for (int i = 0; i<classes.size(); i++) {
 		Class* currentClass = classes[i];
@@ -201,7 +224,7 @@ double Dataset::getMinWeight() {
 	return sum;
 }
 
-double Dataset::getMaxWeight() {
+double Dataset::getMaxWeight() const{
 	double sum = 0;
 	for (int i = 0; i<classes.size(); i++) {
 		Class* currentClass = classes[i];
@@ -252,11 +275,11 @@ Pair::Pair(int i, Item* j, Item* k) {
 	slope = 0;
 }
 
-bool Pair::hasDominance() {
+bool Pair::hasDominance() const{
 	return dominated;
 }
 
-bool Pair::hasSwapped() {
+bool Pair::hasSwapped() const{
 	return swapped;
 }
 
@@ -268,7 +291,7 @@ double Pair::getSlope() {
 	return slope;
 }
 
-int Pair::getClassIndex() {
+int Pair::getClassIndex() const{
 	return classIndex;
 }
 
@@ -282,14 +305,14 @@ void Allocation::changeItem(int classIndex, Item* newItem) {
 	items[classIndex] = newItem;
 }
 
-void Allocation::affiche() {
+void Allocation::affiche() const{
 	for(unsigned int i=0; i < items.size() ;i++) {
 		cout << "Class " <<i+1 << " :" << endl;
 		items[i]->affiche();
 	}
 }
 
-double Allocation::getWeight() {
+double Allocation::getWeight() const{
 	double w = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		w += items[i]->getWeight();
@@ -297,10 +320,46 @@ double Allocation::getWeight() {
 	return w;
 }
 
-double Allocation::getValue() {
+double Allocation::getValue() const{
 	double v = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		v += items[i]->getValue();
+	}
+	return v;
+}
+
+WeightedAllocation::WeightedAllocation(vector<Item*>items,vector<double>proportions):Allocation(items),proportions(proportions){}
+
+void WeightedAllocation::affiche() const{
+	for(unsigned int i=0; i < items.size() ;i++) {
+        cout << "Class " <<i+1 << " :" << endl;
+
+        if(proportions[i]==1){
+            items[i]->affiche();
+        }else { // in this case, the last element of the list belongs to the same class than the current item
+            if(i!=items.size()){ // allows us not to show the class of the items twice
+                cout << "Item " << items[i]->getIndex() << ", poids " << items[i]->getWeight() << ", value " << items[i]->getValue() << " et proportion " << proportions[i] << endl;
+                cout << "et" << endl;
+                cout << "Item " << items[i]->getIndex() << ", poids " << items.back()->getWeight() << ", value " << items.back()->getValue() << " et proportion " << proportions.back() << endl;
+            }
+        }
+
+
+	}
+}
+
+double WeightedAllocation::getWeight() const{
+	double w = 0;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		w += items[i]->getWeight() * proportions[i];
+	}
+	return w;
+}
+
+double WeightedAllocation::getValue() const{
+	double v = 0;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		v += items[i]->getValue() * proportions[i];
 	}
 	return v;
 }
