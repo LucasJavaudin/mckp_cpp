@@ -62,28 +62,20 @@ int main() {
 	Dataset data(datasetValues);
 	*/
 
-	/*
-	// Test de la fonction upperBound() qui rend l'enveloppe convexe d'une classe
-	Class c(vector<double>({1,3,2.3,4,1,0.9,1.9,1.5,4.5}),vector<double>({1,2,2.5,3,3.5,4,4.2,4.5,4.7}));
-	Class c2 = c.upperBound();
-	c2.affiche();
-	pair<double,double> a = MCKP_Greedy_Algorithm(data,100);
-	cout << "poids vide " << a.first << " valeur totale " << a.second;
-	// data.getClasses()[0]->getItems()[0]->affiche();
-	*/
-
-	// Test Dyer-Zemel.
-	data.affiche();
 	double minWeight = data.getMinWeight();
 	double maxWeight = data.getMaxWeight();
 	double capacity = (maxWeight + minWeight) / 2;
 	if ( capacity > minWeight && capacity < maxWeight ) {
+		// Test Dyer-Zemel.
 		pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
 		double optimalSlope = resultPair.first;
 		Allocation optimalAllocation = resultPair.second;
-		cout << "Optimal slope is " + to_string(optimalSlope) << endl;
-		//cout << "Optimal allocation is:" << endl;
-		//optimalAllocation.affiche();
+		cout << "Optimal slope is: " + to_string(optimalSlope) << endl;
+		cout << "Optimal value is: " << optimalAllocation.getValue() << endl;
+		// Test Greedy.
+		pair < Allocation, vector<double> > resultPair2 = MCKP_Greedy_Algorithm(data, capacity);
+		Allocation optimalAllocation2 = resultPair2.first;
+		cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;
 	} else {
 		cout << "Capacity is not compatible with dataset." << endl;
 	}
