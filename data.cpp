@@ -107,7 +107,7 @@ Class Class::upperBound(){
     return upperB;
 }
 
-double Class::getMinWeight() {
+double Class::getMinWeight()const {
 	double m = items[0]->getWeight();
 	int nbItems = items.size();
 	if ( nbItems > 1 ) {
@@ -120,7 +120,7 @@ double Class::getMinWeight() {
 	return m;
 }
 
-double Class::getMaxWeight() {
+double Class::getMaxWeight()const {
 	double m = items[0]->getWeight();
 	int nbItems = items.size();
 	if ( nbItems > 1 ) {
@@ -215,7 +215,7 @@ Dataset::~Dataset() {
     }
 }
 
-double Dataset::getMinWeight() {
+double Dataset::getMinWeight() const{
 	double sum = 0;
 	for (int i = 0; i<classes.size(); i++) {
 		Class* currentClass = classes[i];
@@ -224,7 +224,7 @@ double Dataset::getMinWeight() {
 	return sum;
 }
 
-double Dataset::getMaxWeight() {
+double Dataset::getMaxWeight() const{
 	double sum = 0;
 	for (int i = 0; i<classes.size(); i++) {
 		Class* currentClass = classes[i];
@@ -267,11 +267,11 @@ Pair::Pair(int i, Item* j, Item* k) {
 	slope = 0;
 }
 
-bool Pair::hasDominance() {
+bool Pair::hasDominance() const{
 	return dominated;
 }
 
-bool Pair::hasSwapped() {
+bool Pair::hasSwapped() const{
 	return swapped;
 }
 
@@ -283,7 +283,7 @@ double Pair::getSlope() {
 	return slope;
 }
 
-int Pair::getClassIndex() {
+int Pair::getClassIndex() const{
 	return classIndex;
 }
 
@@ -297,14 +297,14 @@ void Allocation::changeItem(int classIndex, Item* newItem) {
 	items[classIndex] = newItem;
 }
 
-void Allocation::affiche() {
+void Allocation::affiche() const{
 	for(unsigned int i=0; i < items.size() ;i++) {
 		cout << "Class " <<i+1 << " :" << endl;
 		items[i]->affiche();
 	}
 }
 
-double Allocation::getWeight() {
+double Allocation::getWeight() const{
 	double w = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		w += items[i]->getWeight();
@@ -312,7 +312,7 @@ double Allocation::getWeight() {
 	return w;
 }
 
-double Allocation::getValue() {
+double Allocation::getValue() const{
 	double v = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		v += items[i]->getValue();
@@ -322,7 +322,7 @@ double Allocation::getValue() {
 
 WeightedAllocation::WeightedAllocation(vector<Item*>items,vector<double>proportions):Allocation(items),proportions(proportions){}
 
-void WeightedAllocation::affiche() {
+void WeightedAllocation::affiche() const{
 	for(unsigned int i=0; i < items.size() ;i++) {
         cout << "Class " <<i+1 << " :" << endl;
 
@@ -340,7 +340,7 @@ void WeightedAllocation::affiche() {
 	}
 }
 
-double WeightedAllocation::getWeight() {
+double WeightedAllocation::getWeight() const{
 	double w = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		w += items[i]->getWeight() * proportions[i];
@@ -348,7 +348,7 @@ double WeightedAllocation::getWeight() {
 	return w;
 }
 
-double WeightedAllocation::getValue() {
+double WeightedAllocation::getValue() const{
 	double v = 0;
 	for(unsigned int i=0; i < items.size() ;i++) {
 		v += items[i]->getValue() * proportions[i];
