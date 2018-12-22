@@ -10,7 +10,7 @@ class Item {
 		int index;
 		static int createdItems;
 	public:
-		Item(double, double, int);
+		Item(double, double);
 		~Item();
 		double getValue()const ;
 		double getWeight()const ;
@@ -76,12 +76,22 @@ class Pair {
 };
 
 class Allocation {
-	private:
+	protected:
 		vector<Item*> items;
 	public:
 		Allocation(vector<Item*>);
 		Item* operator[](int);
 		void changeItem(int, Item*);
+		void affiche();
+		double getWeight();
+		double getValue();
+};
+
+class WeightedAllocation : public Allocation{
+    	private :
+        	vector<double> proportions;
+	public:
+		WeightedAllocation(vector<Item*>,vector<double>);
 		void affiche();
 		double getWeight();
 		double getValue();
