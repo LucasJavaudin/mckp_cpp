@@ -8,3 +8,5 @@
 *.pdf
 *.synctex.gz
 *.toc
+*.o
+run
