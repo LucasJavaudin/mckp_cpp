@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "data.h"
+#include "ExhaustiveSearch.h"
 #include "GreedyAlgorithm.h"
 #include "DyerZemel.h"
 #include "DiscreteAlgorithm.h"
@@ -19,8 +20,8 @@ int main() {
 	// Distribution for the alternatives' weight.
 	lognormal_distribution<double> weight_distribution(0.0, 1.0);
 
-	// Create dataset (1000 classes with 10 items).
-	Dataset data(1000, 10, value_distribution, weight_distribution, generator);
+	// Create dataset (10 classes with 10 items).
+	Dataset data(5, 5, value_distribution, weight_distribution, generator);
 
 	/*
 	// Create a dataset with the values of Fig. 11.6.
@@ -66,13 +67,19 @@ int main() {
 	double maxWeight = data.getMaxWeight();
 	double capacity = (maxWeight + minWeight) / 2;
 	if ( capacity > minWeight && capacity < maxWeight ) {
+		// Test Exhaustive Search.
+		cout << "===== Exhaustive Search =====" << endl;
+		Allocation optimalAllocation0 = ExhaustiveSearch(&data, capacity);
+		cout << "Optimal value is: " << optimalAllocation0.getValue() << endl;
 		// Test Dyer-Zemel.
+		cout << "===== Dyer-Zemel =====" << endl;
 		pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
 		double optimalSlope = resultPair.first;
-		Allocation optimalAllocation = resultPair.second;
+		Allocation optimalAllocation1 = resultPair.second;
 		cout << "Optimal slope is: " + to_string(optimalSlope) << endl;
-		cout << "Optimal value is: " << optimalAllocation.getValue() << endl;
+		cout << "Optimal value is: " << optimalAllocation1.getValue() << endl;
 		// Test Greedy.
+		cout << "===== Greedy =====" << endl;
 		pair < Allocation, vector<double> > resultPair2 = MCKP_Greedy_Algorithm(data, capacity);
 		Allocation optimalAllocation2 = resultPair2.first;
 		cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;

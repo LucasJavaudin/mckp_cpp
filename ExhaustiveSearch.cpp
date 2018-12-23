@@ -1,19 +1,26 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <climits>
+#include <float.h>
 
 #include "data.h"
 
+#define VERBOSE
+// #define ULTRA_VERBOSE
+
 using namespace std;
 
-void exhaustiveSearch(Dataset* data, double capacity) {
+Allocation ExhaustiveSearch(Dataset* data, double capacity) {
+#ifdef VERBOSE
+	cout << "Initialization..." << endl;
+#endif
 	vector<int> nbItemsByClass = data->getNbItemsByClass();
-	vector<int> allocation (data->getNbClasses(), 0);
+	IndexAllocation allocation(0, data);
+	int j;
 
-	double bestValue = DBL_MIN;
+	double bestValue = -DBL_MAX;
 	double bestWeight = 0;
-	vector<int> bestAllocation = allocation;
+	IndexAllocation bestAllocation = allocation;
 
 	double w = allocation.getWeight();
 	if ( w <= capacity ) {
@@ -22,19 +29,31 @@ void exhaustiveSearch(Dataset* data, double capacity) {
 		bestWeight = w;
 	}
 
-	while ( j < data.getNbClasses() ) {
+	// Cycle through all allocations.
+#ifdef VERBOSE
+	cout << "Starting main loop..." << endl;
+#endif
+	do {
+#ifdef ULTRA_VERBOSE
+	cout << "Looking for next allocation..." << endl;
+#endif
 		j = 0;
 		// Find a new allocation.
 		while ( true ) {
-			allocation[j] += 1;
-			if ( allocation[j] = nbItemsByClass[j] ) {
+			// Increase index of class j by 1.
+			allocation.increment(j);
+			if ( allocation[j] == nbItemsByClass[j] ) {
 				// Reached last item in class j.
-				allocation[j] = 0;
+				allocation.reset(j);
 				j++;
 			} else {
-				break
+				break;
 			}
 		}
+#ifdef ULTRA_VERBOSE
+	cout << "New allocation is" << endl;
+	allocation.affiche();
+#endif
 
 		// Check if allocation is the best allocation.
 		double w = allocation.getWeight();
@@ -42,11 +61,16 @@ void exhaustiveSearch(Dataset* data, double capacity) {
 			double v = allocation.getValue();
 			if ( v > bestValue ) {
 				// New best allocation.
+#ifdef ULTRA_VERBOSE
+	cout << "Found new best allocation" << endl;
+#endif
 				bestValue = v;
 				bestWeight = w;
 				bestAllocation = allocation;
 			}
 		}
 
-	}
+	} while ( j < data->getNbClasses() );
+
+	return Allocation(&bestAllocation);
 }

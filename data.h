@@ -76,11 +76,29 @@ class Pair {
 		int getClassIndex() const;
 };
 
+class IndexAllocation {
+	private:
+		vector<int> itemIndexes;
+		Dataset* data;
+	public:
+		IndexAllocation(vector<int>, Dataset*);
+		IndexAllocation(int, Dataset*);
+		int operator[](int);
+		double getWeight();
+		double getValue();
+		int getSize();
+		Class* getClass(int);
+		void increment(int);
+		void reset(int);
+		void affiche();
+};
+
 class Allocation {
 	protected:
 		vector<Item*> items;
 	public:
 		Allocation(vector<Item*>);
+		Allocation(IndexAllocation*);
 		Item* operator[](int);
 		void changeItem(int, Item*);
 		void affiche() const;
@@ -96,15 +114,4 @@ class WeightedAllocation :public Allocation{
 		void affiche() const;
 		double getWeight() const;
 		double getValue() const;
-};
-
-class IndexAllocation {
-	private:
-		vector<int> itemIndexes;
-	public:
-		IndexAllocation(vector<int>);
-		IndexAllocation(int, int);
-		int operator[](int);
-		double getWeight();
-		double getValue();
 };

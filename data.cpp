@@ -297,6 +297,15 @@ int Pair::getClassIndex() const{
 
 Allocation::Allocation(vector<Item*> items) : items(items) {}
 
+Allocation::Allocation(IndexAllocation* ialloc) {
+	for(unsigned int i=0; i < ialloc->getSize(); i++) {
+		Class* currentClass = ialloc->getClass(i);
+		int itemIndex = (*ialloc)[i];
+		Item* currentItem = (*currentClass)[itemIndex];
+		items.push_back(currentItem);
+	}
+}
+
 Item* Allocation::operator[](int i) {
 	return items[i];
 }
@@ -314,7 +323,7 @@ void Allocation::affiche() const{
 
 double Allocation::getWeight() const{
 	double w = 0;
-	for(unsigned int i=0; i < items.size() ;i++) {
+	for(unsigned int i=0; i < items.size(); i++) {
 		w += items[i]->getWeight();
 	}
 	return w;
@@ -362,4 +371,59 @@ double WeightedAllocation::getValue() const{
 		v += items[i]->getValue() * proportions[i];
 	}
 	return v;
+}
+
+IndexAllocation::IndexAllocation(vector<int> itemIndexes, Dataset* data) : itemIndexes(itemIndexes), data(data) {}
+
+IndexAllocation::IndexAllocation(int defaultValue, Dataset* data) : data(data) {
+	// Create an IndexAllocation with defaultValue for each class.
+	itemIndexes = vector<int>(data->getNbClasses(), defaultValue);
+}
+
+int IndexAllocation::operator[](int i) {
+	return itemIndexes[i];
+}
+
+double IndexAllocation::getWeight() {
+	double w = 0;
+	for(unsigned int i=0; i < data->getNbClasses(); i++) {
+		Class* currentClass = (*data)[i];
+		int itemIndex = itemIndexes[i];
+		Item* currentItem = (*currentClass)[itemIndex];
+		w += currentItem->getWeight();
+	}
+	return w;
+}
+
+double IndexAllocation::getValue() {
+	double v = 0;
+	for(unsigned int i=0; i < data->getNbClasses(); i++) {
+		Class* currentClass = (*data)[i];
+		int itemIndex = itemIndexes[i];
+		Item* currentItem = (*currentClass)[itemIndex];
+		v += currentItem->getValue();
+	}
+	return v;
+}
+
+int IndexAllocation::getSize() {
+	return data->getNbClasses();
+}
+
+Class* IndexAllocation::getClass(int i) {
+	return (*data)[i];
+}
+
+void IndexAllocation::increment(int j) {
+	itemIndexes[j]++;
+}
+
+void IndexAllocation::reset(int j) {
+	itemIndexes[j] = 0;
+}
+
+void IndexAllocation::affiche() {
+	for(unsigned int i=0; i < itemIndexes.size(); i++) {
+		cout << "Class " << i+1 << ": index " << itemIndexes[i] << endl;
+	}
 }
