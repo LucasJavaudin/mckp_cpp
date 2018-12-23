@@ -80,7 +80,7 @@ int main() {
 		cout << "Optimal value is: " << optimalAllocation1.getValue() << endl;
 		// Test Greedy.
 		cout << "===== Greedy =====" << endl;
-		pair < Allocation, vector<double> > resultPair2 = MCKP_Greedy_Algorithm(data, capacity);
+		pair < Allocation, vector<double> > resultPair2 = MCKP_Greedy_Algorithm(&data, capacity);
 		Allocation optimalAllocation2 = resultPair2.first;
 		cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;
 	} else {
