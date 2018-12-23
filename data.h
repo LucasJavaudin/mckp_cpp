@@ -33,7 +33,7 @@ class Class {
 		vector<Item*> getItems() const ;
 		void sortItemsWeight();
 		void affiche() const;
-		Class upperBound();
+		vector<Item*> upperBound();
 		double getMinWeight() const;
 		double getMaxWeight() const;
 		pair<Item*,double> mostEfficientReplacer(const Item*) const;
