@@ -4,9 +4,6 @@
 
 #include "data.h"
 
-#define VERBOSE
-#define ULTRA_VERBOSE
-
 using namespace std;
 
 struct aideTri
@@ -17,8 +14,8 @@ struct aideTri
         }
 };
 
-pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weight){
-    vector<Class> R; // @R va contenir les enveloppes convexes de chaque classes
+pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset* d, double max_Weight){
+    vector<vector<Item*>> R; // @R va contenir les enveloppes convexes de chaque classes
     vector<pair<Item*,double>> pairItem;
 
     // j-th class is in the knapsack, 0 if not. (we can take a fraction of the latest item put in the knapsack when
@@ -36,14 +33,14 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
 #ifdef VERBOSE
         cout << "STEP 1 AND 2..." << endl;
 #endif
-    for(int i=0; i<d.getNbClasses(); i++){
+    for(int i=0; i<d->getNbClasses(); i++){
 
         // Etape 1 : construction of upper bound in each class
 #ifdef ULTRA_VERBOSE
         cout << "Building upper bound " << to_string(i) << "..."<< endl;
 #endif
 
-        R.push_back((d[i])->upperBound());
+        R.push_back( ((*d)[i])->upperBound() );
         proportion.push_back(1);
         choosenItems.push_back(R[i][0]);
         // Etape 2 : construction of efficacity vector
@@ -51,7 +48,7 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
         cout << "Building of efficacity vector : PART"<< to_string(i) << "..." << endl;
 #endif
 
-        for(unsigned int j=1; j<R[i].getNbItems(); j++){
+        for(unsigned int j=1; j<R[i].size(); j++){
             // R[i] is already sorted by increasing weights because of we sorted classes[i] before deriving the upper
             // bound of this class
             double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue(); // value[i][j] - value[i][j-1]
@@ -66,21 +63,20 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
         residualCapacity -= ((R[i])[0])->getWeight();
         totalValue += (R[i][0])->getValue();
     }
-
-
+    cout << "bien passé 1" << endl;
 #ifdef VERBOSE
         cout << "STEP 3... " << endl;
 #endif
     sort(pairItem.begin(),pairItem.end(),aideTri()); // sorting items (in each class) according to decreasing p/w (efficacity)
     unsigned int l=0;
-    while(l<pairItem.size()&&residualCapacity>0){
+    while((l<pairItem.size())&(residualCapacity>0)){
         // we're looking for the Class of the l-th item
 #ifdef VERBOSE
         cout << "STEP 4..."<< endl;
 #endif
         for(unsigned int i=0; i<R.size(); i++){
 
-            for(unsigned int j=0; j<(R[i].getNbItems()); j++){
+            for(unsigned int j=0; j<(R[i].size()); j++){
 
                 if(pairItem[l].first->getIndex()==R[i][j]->getIndex()){
                     double diff_w = R[i][j]->getWeight() - R[i][j-1]->getWeight();
@@ -109,7 +105,5 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset d, double max_Weig
         l++;
     }
 
-
-    //return make_pair(residualCapacity,totalValue);
     return make_pair(Allocation(choosenItems),proportion);
 }
