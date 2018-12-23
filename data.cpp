@@ -80,11 +80,11 @@ vector<Item*> Class::getItems() const { return items; }
 void Class::sortItemsWeight() { sort (items.begin(), items.end(), compareWeight()); }
 void Class::affiche() const { for(Item* it : items) it->affiche(); }
 
-Class Class::upperBound(){
+vector<Item*> Class::upperBound(){
     // construit l'enveloppe convexe de la classe
     sortItemsWeight(); // on commence par trier par ordre croissant les items selon leur poids
     vector<Item*> res;
-    res.push_back(items[0]); // je suppose que weight[0] est strictement plus petit pour l'instant, à voir ensuite
+    res.push_back(items[0]); // je suppose que weight[0] est strictement plus petit que les autres
 
     for (int k=1; k<getNbItems(); k++){
         bool estDomine = false;
@@ -103,8 +103,7 @@ Class Class::upperBound(){
         }
         if(!estDomine) res.push_back(items[k]);
     }
-    Class upperB(res);
-    return upperB;
+    return res;
 }
 
 double Class::getMinWeight()const {
