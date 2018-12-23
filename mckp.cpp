@@ -83,6 +83,10 @@ int main() {
 		pair < Allocation, vector<double> > resultPair2 = MCKP_Greedy_Algorithm(&data, capacity);
 		Allocation optimalAllocation2 = resultPair2.first;
 		cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;
+		// Test Discrete.
+		cout << "===== Discrete =====" << endl;
+		Allocation optimalAllocation3 = MCKP_Discrete_Algorithm(&data, capacity);
+		cout << "Optimal value is: " << optimalAllocation3.getValue() << endl;
 	} else {
 		cout << "Capacity is not compatible with dataset." << endl;
 	}

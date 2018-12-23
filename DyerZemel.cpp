@@ -5,7 +5,7 @@
 
 #include "data.h"
 
-#define VERBOSE
+// #define VERBOSE
 // #define ULTRA_VERBOSE
 
 using namespace std;
