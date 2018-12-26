@@ -4,6 +4,9 @@
 
 #include "data.h"
 
+// #define VERBOSE
+// #define ULTRA_VERBOSE
+
 using namespace std;
 
 struct aideTri
@@ -63,8 +66,8 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset* d, double max_Wei
         residualCapacity -= ((R[i])[0])->getWeight();
         totalValue += (R[i][0])->getValue();
     }
-    cout << "bien passé 1" << endl;
 #ifdef VERBOSE
+    cout << "bien passé 1" << endl;
         cout << "STEP 3... " << endl;
 #endif
     sort(pairItem.begin(),pairItem.end(),aideTri()); // sorting items (in each class) according to decreasing p/w (efficacity)
@@ -83,7 +86,9 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset* d, double max_Wei
                     double diff_p = R[i][j]->getValue() - R[i][j-1]->getValue();
                     if(diff_w<=residualCapacity){
                         //Actualisation
+#ifdef ULTRA_VERBOSE
                         cout << "Item " << j+1 << " of class " << i+1 << " is replaced" << endl;
+#endif
                         residualCapacity -= diff_w;
                         totalValue += diff_p;
                         choosenItems[i] = R[i][j]; // we take it entirely

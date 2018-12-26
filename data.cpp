@@ -160,7 +160,7 @@ void Class::deleteItem(int ind) {
 // where i is in the vector of Items of Class, and i is different from it
 pair<Item*,double> Class::mostEfficientReplacer(const Item* it) const{
     Item* res = nullptr;
-    double maxEfficiency = 0; // just for the initialization, no importance of the value
+    double maxEfficiency;
     for(Item* i : getItems()){
         if((*i)!=(*it)){
 
