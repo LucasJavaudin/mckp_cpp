@@ -114,4 +114,6 @@ class WeightedAllocation :public Allocation{
 		void affiche() const;
 		double getWeight() const;
 		double getValue() const;
+		double getStandardValue() const;
+		double getStandardWeight() const;
 };
