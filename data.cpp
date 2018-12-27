@@ -372,6 +372,36 @@ double WeightedAllocation::getValue() const{
 	return v;
 }
 
+double WeightedAllocation::getStandardValue() const{
+	double v = 0;
+	bool hasFraction = false;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		if(!hasFraction | (i!=items.size()-1)){
+			v += items[i]->getValue();
+		
+			if(proportions[i]!=1){
+				hasFraction = true;
+			}
+		}
+	}
+	return v;
+}
+
+double WeightedAllocation::getStandardWeight() const{
+	double w = 0;
+	bool hasFraction = false;
+	for(unsigned int i=0; i < items.size() ;i++) {
+		if(!hasFraction | (i!=items.size()-1)){
+			w += items[i]->getWeight();
+		
+			if(proportions[i]!=1){
+				hasFraction = true;
+			}
+		}
+	}
+	return w;
+}
+
 IndexAllocation::IndexAllocation(vector<int> itemIndexes, Dataset* data) : itemIndexes(itemIndexes), data(data) {}
 
 IndexAllocation::IndexAllocation(int defaultValue, Dataset* data) : data(data) {
