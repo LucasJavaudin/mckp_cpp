@@ -374,14 +374,10 @@ double WeightedAllocation::getValue() const{
 
 double WeightedAllocation::getStandardValue() const{
 	double v = 0;
-	bool hasFraction = false;
+	bool hasFraction = (proportions[items.size()-1]!=1);
 	for(unsigned int i=0; i < items.size() ;i++) {
 		if(!hasFraction | (i!=items.size()-1)){
 			v += items[i]->getValue();
-		
-			if(proportions[i]!=1){
-				hasFraction = true;
-			}
 		}
 	}
 	return v;
@@ -389,14 +385,10 @@ double WeightedAllocation::getStandardValue() const{
 
 double WeightedAllocation::getStandardWeight() const{
 	double w = 0;
-	bool hasFraction = false;
+	bool hasFraction = (proportions[items.size()-1]!=1);
 	for(unsigned int i=0; i < items.size() ;i++) {
 		if(!hasFraction | (i!=items.size()-1)){
 			w += items[i]->getWeight();
-		
-			if(proportions[i]!=1){
-				hasFraction = true;
-			}
 		}
 	}
 	return w;
