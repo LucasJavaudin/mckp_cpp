@@ -97,7 +97,7 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset* d, double max_Wei
                         cout << "STEP 5..." << endl;
 #endif
                         cout << "Knapsack too heavy : last item to be replaced (proportionally) is " << j+1 << " of class " << i+1 << endl;
-                        proportion[i]= residualCapacity/diff_w ;
+                        proportion[i]= 1- residualCapacity/diff_w ;
                         choosenItems.push_back(R[i][j]);
                         proportion.push_back(residualCapacity/diff_w);
                         residualCapacity = 0;
