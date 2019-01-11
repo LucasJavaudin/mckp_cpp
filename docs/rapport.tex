@@ -122,6 +122,59 @@ $v^{*} = 0$ \comm{Valeur totale de l'allocation optimale.}\\
 
 \subsection{Algorithme Greedy avec enveloppe convexe}
 
+\subsection{Algorithme Greedy avec enveloppe convexe}
+L'algorithme Greedy avec enveloppe convexe réduit le nombre d'allocation maximal à tester en s'appuyant sur deux concepts de domination. 
+\begin{itemize}
+    \item Soient deux objets $x$ et $y$ de la même classe. Alors on dit que que l'objet $y$ est dominé par $x$ si, par définition, on a $w_{x} \leq w_{y} < w_{z}$ et $p_y \leq p_x$,
+    \item Soient trois objets $x$, $y$ et $z$ de la même classe qui vérifient $w_{x} < w_{y} < w_{z}$. Alors on dit que que l'objet $y$ est LP-dominé par $x$ et $z$ si $\frac{p_z—p_y}{w_z—w_y} \geq \frac{p_y—p_x}{w_y—w_x}$.
+\end{itemize}
+L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la classe qui ne sont ni dominés, ni LP-dominés au sein de cette classe. Ensuite, après avoir trié chaque enveloppe par poids croissant, nous calculons l'efficacité de chaque objet. Elle est définie par :
+\begin{equation*}
+    e_x = \frac{p_x - p_y}{w_x - w_y},
+\end{equation*}
+où $y$ est l'objet précédent $x$ dans l'enveloppe contenant $x$. Ensuite, à chaque itération, on va prendre l'objet restant avec l'efficacité la plus grande au sein de toutes les classes, jusqu'à atteindre le poids maximal.
+
+\begin{algorithm}[!ht]
+\caption{Algorithme Greedy avec enveloppe convexe.}
+\label{alg:greedy-convexe}
+\small
+\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+\Input{$J$ classes avec $n_j$ objets dans chaque classe, capacité $c$}
+	On note $\mathbf{x}^{*} = (x_1, ,., x_{J})$ l'allocation optimale et $\mathbf{\alpha}^{*} = (\alpha_1, ,., \alpha_{J})$ le vecteur des proportions des objets.\\
+	\For{classe $j$ dans $\{1, \dots, J\}$}
+	{
+	    On calcule l'enveloppe convexe $R_j$ de la classe $j$, puis on la trie par poids croissant.\\
+	    On choisit pour $x_j$ l'objet le plus léger de l'enveloppe et $\alpha_j=1$.\\
+	}
+	On trie les objets de l'ensemble des enveloppes par efficacité décroissante qu'on note $v$.\\
+	\While{on n'a pas fini de parcourir le vecteur $v$ et $c>0$}
+	{
+	    On prend l'objet suivant dans $v$, noté $y$.\\
+	    \For{enveloppe $j$ dans $\{1, \dots, J\}$}
+	    {
+		    \uIf{$y$ appartient à la classe $j$}
+		    {
+		        On calcule la prise de poids du sac $d_w = w_y-w_{x_j}$.\\
+		        \eIf{$d_w \leq c$}
+		        {
+		            On change d'objet pour la classe $j$ : $x_j = y$.\\
+		            (on le met enièrement :) $\alpha_j = 1$.\\
+		            On diminue la capacité restante $c -= d_w$.\\
+		            
+		        }
+		        {
+		            \comm{l'objet qu'on tente de mettre dans le sac est trop lourd, on va en mettre uniquement une proportion.}\\
+		            On ajoute l'objet $x_{J+1} = y$, en proportion
+		            $\alpha_{J+1} = \frac{c}{d_w}$.\\
+                    On change la proportion de $x_j$ : $\alpha_j = 1-\frac{c}{d_w}$.\\
+                    La capacité devient nulle $c = 0$.
+		        }
+		    }
+	    }
+	}
+\Output{Allocation $\mathbf{x}^{*}$ et $\alpha^*$}
+\end{algorithm}
+
 \subsection{Algorithme Dyer-Zemel}
 
 L'algorithme Dyer-Zemel consiste à former des couples de deux objets et à calculer la pente définie par :
