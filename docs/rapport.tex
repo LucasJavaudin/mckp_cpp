@@ -119,20 +119,64 @@ $v^{*} = 0$ \comm{Valeur totale de l'allocation optimale.}\\
 \end{algorithm}
 
 \subsection{Algorithme Greedy simple}
+L'algorithme Greedy simple fournit une approximation de l'allocation optimale. Pour réduire le nombre de combinaison à tester, cet algorithme se base sur deux concepts : la domination et l'efficacité.\\
+Soient deux objets $x$ et $y$ de la même classe. Alors on dit que que l'objet $y$ est dominé par $x$ si, par définition, on a $w_{x} \leq w_{y} < w_{z}$ et $p_y \leq p_x$. L'élimination des objets dominés n'approxime pas l'output rendu par l'algorithme, car il n'y a aucune chance un objet dominé ne sera jamais présent dans l'allocation optimale.
 
-\subsection{Algorithme Greedy avec enveloppe convexe}
-
-\subsection{Algorithme Greedy avec enveloppe convexe}
-L'algorithme Greedy avec enveloppe convexe réduit le nombre d'allocation maximal à tester en s'appuyant sur deux concepts de domination. 
-\begin{itemize}
-    \item Soient deux objets $x$ et $y$ de la même classe. Alors on dit que que l'objet $y$ est dominé par $x$ si, par définition, on a $w_{x} \leq w_{y} < w_{z}$ et $p_y \leq p_x$,
-    \item Soient trois objets $x$, $y$ et $z$ de la même classe qui vérifient $w_{x} < w_{y} < w_{z}$. Alors on dit que que l'objet $y$ est LP-dominé par $x$ et $z$ si $\frac{p_z—p_y}{w_z—w_y} \geq \frac{p_y—p_x}{w_y—w_x}$.
-\end{itemize}
-L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la classe qui ne sont ni dominés, ni LP-dominés au sein de cette classe. Ensuite, après avoir trié chaque enveloppe par poids croissant, nous calculons l'efficacité de chaque objet. Elle est définie par :
+L'efficacité d'un objet $x$ par rapport à un objet $y$ de la même classe est, quant à elle, définie par :
 \begin{equation*}
-    e_x = \frac{p_x - p_y}{w_x - w_y},
+    e_{x,y} = \frac{p_x - p_y}{w_x - w_y}.
 \end{equation*}
-où $y$ est l'objet précédent $x$ dans l'enveloppe contenant $x$. Ensuite, à chaque itération, on va prendre l'objet restant avec l'efficacité la plus grande au sein de toutes les classes, jusqu'à atteindre le poids maximal.
+À chaque itération, nous allons chercher l'objet maximisant l'efficacité par rapport à l'objet de la même classe présent dans l'allocation $x^*$ :
+\[ r_j = \underset{x\in C_j}{\arg\max}\ e_{x,x_j},\] où $x_j$ est l'objet de la classe $j$ dans le sac à dos.\\
+En notant $\mathbf{r}=\left(r_1,\dots,r_J\right)$, on définit alors le meilleur remplaçant $r^*$ par :
+\[ r^* = \underset{j=1,\dots,J}{\arg\max}\ r_j.\]
+On itère jusqu'à ce que le poids maximal soit dépassé ou qu'il n'y ait plus de remplaçant (si on change d'objet optimal dans la classe $j^*$, on retire tous les objets de $j^*$ de poids inférieur à $r^*$). 
+\begin{algorithm}[!ht]
+\caption{Algorithme Greedy simple.}
+\label{alg:greedy-simple}
+\small
+\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+\Input{$J$ classes avec $n_j$ objets dans chaque classe, capacité $c$}
+	On note $\mathbf{x}^{*} = (x_1, ,., x_{J})$ l'allocation optimale.\\
+	\For{classe $j$ dans $\{1, \dots, J\}$}
+	{
+	    On retire les objets dominés par un autre objet de la classe.\\
+	    On choisit pour $x_j$ l'objet le plus léger de la classe.\\
+	    On calcule $r_j = \underset{x\in C_j}{\arg\max}\ e_{x,x_j}$.
+	}
+	
+	\While{il reste au moins un remplaçant dans une classe et $c>0$}
+	{
+	    On prend $r^*$ et on note $j^*$ sa classe.\\
+	    On calcule la prise de poids du sac $d_w = w_y-w_{x_j}$.\\
+		\eIf{$d_w \leq c$}
+		{
+		On retire $x_{j^*}$ de $C_{j^*}$ ainsi que\\
+		On change d'objet pour la classe $j$ : $x_j = r^*$.\\
+		On diminue la capacité restante $c -= d_w$.\\
+		
+		\For{objet $x$ dans la classe $j^*$}
+	    {
+	        \wIf{$w_x \leq w_{r^*}$}
+		    {
+		        On retire $x$ de la classe.\\
+		    }
+	    }
+	    On calcule le nouveau $r_{j^*} = \underset{x\in C_{j^*}}{\arg\max}\ e_{x,r^*}$. \\
+	    }
+	    {
+	    On fixe $c=0$ pour arrêter l'algorithme.
+	    }
+	}
+\Output{Allocation $\mathbf{x}^{*}$}
+\end{algorithm}
+\subsection{Algorithme Greedy avec enveloppe convexe}
+
+\subsection{Algorithme Greedy avec enveloppe convexe}
+L'algorithme Greedy avec enveloppe convexe réduit le nombre d'allocation maximal à tester en s'appuyant sur deux concepts de domination : la domination simple, que nous avons déjà abordée lors de l'algorithme précédent, et la LP-domination. Ainsi, il élimine plus d'objets dans chaque classe que l'algorithme précédent. 
+
+Soient trois objets $x$, $y$ et $z$ de la même classe qui vérifient $w_{x} < w_{y} < w_{z}$. Alors on dit que que l'objet $y$ est LP-dominé par $x$ et $z$ si $\frac{p_z—p_y}{w_z—w_y} \geq \frac{p_y—p_x}{w_y—w_x}$.
+L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la classe qui ne sont ni dominés, ni LP-dominés au sein de cette classe. Ensuite, après avoir trié chaque enveloppe par poids croissant, nous calculons l'efficacité de chaque objet au sein de cet enveloppe. Ensuite, à chaque itération, on va prendre l'objet restant avec l'efficacité la plus grande au sein de toutes les classes, jusqu'à atteindre le poids maximal.
 
 \begin{algorithm}[!ht]
 \caption{Algorithme Greedy avec enveloppe convexe.}
