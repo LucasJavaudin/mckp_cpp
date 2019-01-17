@@ -70,7 +70,7 @@ Class::Class(vector<Item*> items):items(items) {
 
 Class::~Class() {
     for(Item* it : items){
-        delete it; // supprime l'item pointé par it, libère la mémoire
+        it = nullptr;
     }
 }
 
@@ -155,7 +155,12 @@ void Class::deleteItem(int ind) {
     items.erase(items.begin() + ind);
 }
 
-//Peut-être à reprendre, voir comment choisir si deux efficacité sont les mêmes
+void Class::freeItems(){
+    for(Item* it : items){
+        delete it;
+    }
+}
+
 // returns an Item of the Class, which is the most efficient replacer, i.e argmax { [value(i)-value(it)] / [weight(i)-weight(it)])
 // where i is in the vector of Items of Class, and i is different from it
 pair<Item*,double> Class::mostEfficientReplacer(const Item* it) const{
@@ -210,7 +215,7 @@ Dataset::Dataset(vector<Class*> c) : classes(c) {}
 
 Dataset::~Dataset() {
     for(Class* c : classes){
-        delete c;
+        c = nullptr;
     }
 }
 
@@ -250,6 +255,13 @@ void Dataset::affiche() const {
     }
 }
 vector<Class*> Dataset::getClasses() const { return classes; }
+
+void Dataset::freeClasses(){ // allows to free memory
+    for(Class* c : classes){
+        (*c).freeItems(); // we destroy items in the class
+        delete c; // we destroy the class
+    }
+}
 
 Pair::Pair(int i, Item* j, Item* k) {
 	classIndex = i;
