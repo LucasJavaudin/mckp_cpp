@@ -17,7 +17,7 @@ struct aideTri
         }
 };
 
-pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset* d, double max_Weight){
+WeightedAllocation MCKP_Greedy_Algorithm(Dataset* d, double max_Weight){
     vector<vector<Item*>> R; // @R va contenir les enveloppes convexes de chaque classes
     vector<pair<Item*,double>> pairItem;
 
@@ -110,5 +110,6 @@ pair<Allocation,vector<double>> MCKP_Greedy_Algorithm(Dataset* d, double max_Wei
         l++;
     }
 
-    return make_pair(Allocation(choosenItems),proportion);
+    WeightedAllocation res = WeightedAllocation(choosenItems,proportion);
+    return res ;
 }
