@@ -9,6 +9,9 @@
 #include "DyerZemel.h"
 #include "DiscreteAlgorithm.h"
 
+#define SMALL
+#define LARGE
+
 using namespace std;
 
 Dataset random_data(int nbClasses, int nbItems) {
@@ -109,7 +112,7 @@ Dataset example2() {
 }
 
 int main() {
-
+#ifdef SMALL
 	Dataset data = example2();
 
 	cout << "===== Dataset =====" << endl;
@@ -134,4 +137,26 @@ int main() {
 	cout << "===== Discrete =====" << endl;
 	Allocation optimalAllocation3 = MCKP_Discrete_Algorithm(&data, capacity);
 	cout << "Optimal value is: " << optimalAllocation3.getValue() << endl;
+#endif
+#ifdef LARGE
+	Dataset data = random_data(10000, 100);
+
+	cout << "Minimum capacity is " << data.getMinWeight() << endl;
+	cout << "Maximum capacity is " << data.getMaxWeight() << endl;
+
+	double capacity = 100000;
+	// Test Dyer-Zemel.
+	cout << "===== Dyer-Zemel =====" << endl;
+	pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
+	Allocation optimalAllocation1 = resultPair.second;
+	cout << "Optimal value is: " << optimalAllocation1.getValue() << endl;
+	// Test Greedy.
+	cout << "===== Greedy =====" << endl;
+	WeightedAllocation optimalAllocation2 = MCKP_Greedy_Algorithm(&data, capacity);
+	cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;
+	// Test Discrete.
+	cout << "===== Discrete =====" << endl;
+	Allocation optimalAllocation3 = MCKP_Discrete_Algorithm(&data, capacity);
+	cout << "Optimal value is: " << optimalAllocation3.getValue() << endl;
+#endif
 }
