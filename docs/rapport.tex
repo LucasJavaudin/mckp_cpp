@@ -39,6 +39,7 @@ Plus précisément, les solutions proposées par ces algorithmes sont réalisabl
 
 Enfin, nous montrons que le problème du sac à dos à choix multiple est équivalent au problème consistant à trouver la politique d'incitations maximisant l'utilité sociale, lorsque les individus font face à un choix discret et lorsque le budget de la politique est contraint.
 
+\newpage
 \section{Algorithmes}
 % On peut mettre ici un pseudo-code des algorithmes que l'on a codé.
 
@@ -75,6 +76,8 @@ La table \ref{tab:recherche-exhaustive} montre comment l'algorithme parcourt tou
 		$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$\\
 	\end{tabular}
 \end{table}
+
+L'algorithme \ref{alg:recherche-exhaustive} est un pseudo-code de l'algorithme implémenté en C++.
 
 \begin{algorithm}[!ht]
 \caption{Algorithme de recherche exhaustive pour le MCKP.}
@@ -118,19 +121,23 @@ $v^{*} = 0$ \comm{Valeur totale de l'allocation optimale.}\\
 \Output{Allocation $\mathbf{x}^{*}$}
 \end{algorithm}
 
+\newpage
 \subsection{Algorithme Greedy simple}
 L'algorithme Greedy simple fournit une approximation de l'allocation optimale. Pour réduire le nombre de combinaison à tester, cet algorithme se base sur deux concepts : la domination et l'efficacité.\\
-Soient deux objets $x$ et $y$ de la même classe. Alors on dit que que l'objet $y$ est dominé par $x$ si, par définition, on a $w_{x} \leq w_{y} < w_{z}$ et $p_y \leq p_x$. L'élimination des objets dominés n'approxime pas l'output rendu par l'algorithme, car il n'y a aucune chance un objet dominé ne sera jamais présent dans l'allocation optimale.
+Soient deux objets $x$ et $y$ de la même classe. Alors on dit que que l'objet $y$ est dominé par $x$ si, par définition, on a $w_{x} \leq w_{y}$ et $p_y \leq p_x$. L'élimination des objets dominés n'a pas d'impact sur l'optimalité de l'output rendu par l'algorithme, car un objet dominé ne sera jamais présent dans l'allocation optimale.
 
 L'efficacité d'un objet $x$ par rapport à un objet $y$ de la même classe est, quant à elle, définie par :
-\begin{equation*}
+\begin{equation}\label{eq:eff}
     e_{x,y} = \frac{p_x - p_y}{w_x - w_y}.
-\end{equation*}
+\end{equation}
 À chaque itération, nous allons chercher l'objet maximisant l'efficacité par rapport à l'objet de la même classe présent dans l'allocation $x^*$ :
 \[ r_j = \underset{x\in C_j}{\arg\max}\ e_{x,x_j},\] où $x_j$ est l'objet de la classe $j$ dans le sac à dos.\\
 En notant $\mathbf{r}=\left(r_1,\dots,r_J\right)$, on définit alors le meilleur remplaçant $r^*$ par :
 \[ r^* = \underset{j=1,\dots,J}{\arg\max}\ r_j.\]
 On itère jusqu'à ce que le poids maximal soit dépassé ou qu'il n'y ait plus de remplaçant (si on change d'objet optimal dans la classe $j^*$, on retire tous les objets de $j^*$ de poids inférieur à $r^*$). 
+
+L'algorithme \ref{alg:greedy-simple} est un pseudo-code de l'algorithme implémenté en C++.
+
 \begin{algorithm}[!ht]
 \caption{Algorithme Greedy simple.}
 \label{alg:greedy-simple}
@@ -151,32 +158,34 @@ On itère jusqu'à ce que le poids maximal soit dépassé ou qu'il n'y ait plus 
 	    On calcule la prise de poids du sac $d_w = w_y-w_{x_j}$.\\
 		\eIf{$d_w \leq c$}
 		{
-		On retire $x_{j^*}$ de $C_{j^*}$ ainsi que\\
-		On change d'objet pour la classe $j$ : $x_j = r^*$.\\
-		On diminue la capacité restante $c -= d_w$.\\
-		
-		\For{objet $x$ dans la classe $j^*$}
-	    {
-	        \wIf{$w_x \leq w_{r^*}$}
-		    {
-		        On retire $x$ de la classe.\\
-		    }
-	    }
-	    On calcule le nouveau $r_{j^*} = \underset{x\in C_{j^*}}{\arg\max}\ e_{x,r^*}$. \\
-	    }
+			On retire $x_{j^*}$ de $C_{j^*}$ ainsi que\\
+			On change d'objet pour la classe $j$ : $x_j = r^*$.\\
+			On diminue la capacité restante $c \minuseq d_w$.\\
+
+			\For{objet $x$ dans la classe $j^*$}
+			{
+				\uIf{$w_x \leq w_{r^*}$}
+				{
+					On retire $x$ de la classe.\\
+				}
+			}
+			On calcule le nouveau $r_{j^*} = \underset{x\in C_{j^*}}{\arg\max}\ e_{x,r^*}$. \\
+		}
 	    {
 	    On fixe $c=0$ pour arrêter l'algorithme.
 	    }
 	}
 \Output{Allocation $\mathbf{x}^{*}$}
 \end{algorithm}
-\subsection{Algorithme Greedy avec enveloppe convexe}
-
+\newpage
 \subsection{Algorithme Greedy avec enveloppe convexe}
 L'algorithme Greedy avec enveloppe convexe réduit le nombre d'allocation maximal à tester en s'appuyant sur deux concepts de domination : la domination simple, que nous avons déjà abordée lors de l'algorithme précédent, et la LP-domination. Ainsi, il élimine plus d'objets dans chaque classe que l'algorithme précédent. 
 
-Soient trois objets $x$, $y$ et $z$ de la même classe qui vérifient $w_{x} < w_{y} < w_{z}$. Alors on dit que que l'objet $y$ est LP-dominé par $x$ et $z$ si $\frac{p_z—p_y}{w_z—w_y} \geq \frac{p_y—p_x}{w_y—w_x}$.
+Soient trois objets $x$, $y$ et $z$ de la même classe qui vérifient $w_{x} < w_{y} < w_{z}$. Alors on dit que que l'objet $y$ est LP-dominé par $x$ et $z$ si 
+\[ \frac{p_z—p_y}{w_z—w_y} \geq \frac{p_y—p_x}{w_y—w_x}. \]
 L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la classe qui ne sont ni dominés, ni LP-dominés au sein de cette classe. Ensuite, après avoir trié chaque enveloppe par poids croissant, nous calculons l'efficacité de chaque objet au sein de cet enveloppe. Ensuite, à chaque itération, on va prendre l'objet restant avec l'efficacité la plus grande au sein de toutes les classes, jusqu'à atteindre le poids maximal.
+
+L'algorithme \ref{alg:greedy-convexe} est un pseudo-code de l'algorithme implémenté en C++.
 
 \begin{algorithm}[!ht]
 \caption{Algorithme Greedy avec enveloppe convexe.}
@@ -203,7 +212,7 @@ L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la class
 		        {
 		            On change d'objet pour la classe $j$ : $x_j = y$.\\
 		            (on le met enièrement :) $\alpha_j = 1$.\\
-		            On diminue la capacité restante $c -= d_w$.\\
+		            On diminue la capacité restante $c \minuseq d_w$.\\
 		            
 		        }
 		        {
@@ -219,15 +228,10 @@ L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la class
 \Output{Allocation $\mathbf{x}^{*}$ et $\alpha^*$}
 \end{algorithm}
 
+\newpage
 \subsection{Algorithme Dyer-Zemel}
 
-L'algorithme Dyer-Zemel consiste à former des couples de deux objets et à calculer la pente définie par :
-\[
-	\alpha_{xy} = \frac{p_y - p_x}{w_y - w_x}
-\]
-où $p_x$ désigne la valeur de l'objet $x$ et $w_x$ désigne son poids.
-
-On dit que $x$ domine $y\neq x$ si $p_x \geq p_y$ et $w_x \leq w_y$.
+L'algorithme Dyer-Zemel consiste à former des couples de deux objets et à calculer l'efficacité du couple définie par \eqref{eq:eff}.
 
 Pour toute classe $j$, pour tout $\alpha>0$, on note
 \[ M_j(\alpha) = \underset{x\in N_j}{\arg \max} ( p_x - \alpha w_x) \]
@@ -235,9 +239,11 @@ où $N_j$ désigne l'ensemble des objets de la classe $j$.
 On note $a_j$ et $b_j$ les extrêmes de $M_j$ :
 \[ a_j = \underset{x\in M_j(\alpha)}{\arg\min}\ w_x, \quad b_j = \underset{x\in M_j(\alpha)}{\arg\max}\ w_x. \]
 
+L'algorithme \ref{alg:dyer-zemel} est un pseudo-code de l'algorithme implémenté en C++.
+
 \begin{algorithm}[!ht]
 \caption{Algorithme Dyer-Zemel.}
-\label{alg:recherche-exhaustive}
+\label{alg:dyer-zemel}
 \small
 \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
 \Input{$J$ classes avec $n_j$ objets dans chaque classe, capacité $c$}
@@ -272,16 +278,16 @@ On note $a_j$ et $b_j$ les extrêmes de $M_j$ :
 	}
 	\For{couple d'objet ($x$, $y$)}
 	{
-		Calculer la pente $\alpha_{xy} = \frac{p_{y}-p_{x}}{w_{y}-w_{x}}$.\\
+		Calculer l'efficacité $\alpha_{xy} = \frac{p_{y}-p_{x}}{w_{y}-w_{x}}$.\\
 	}
-	Soit $\alpha$ la pente médiane.\\
+	Soit $\alpha$ l'efficacité médiane.\\
 	\For{classe $j$ dans $\{1, \dots, J\}$}
 	{
 		On calcule $M_j(\alpha)$, $a_j$ et $b_j$.
 	}
 	\eIf{$\sum^{J}_{j=1} w_{a_j} \leq c < \sum^{J}_{j=1} w_{b_j}$}
 	{
-		La pente optimale est $\alpha$.\\
+		L'efficacité optimale est $\alpha$.\\
 		Dans chaque classe, on choisit l'objet $a_j$ : $x_j = a_j$, $\forall j$.\\
 		\textbf{break}\\
 	}
@@ -299,16 +305,27 @@ On note $a_j$ et $b_j$ les extrêmes de $M_j$ :
 \Output{Allocation $\mathbf{x}^{*}$}
 \end{algorithm}
 
+\newpage
 \section{Structure du code}
 % On peut mettre ici un diagramme de classe UML et une présentation des fichiers avec leur contenu.
 
+La figure \ref{fig:diagramme} présente le diagramme de classes de notre code source.
+
+Tous nos algorithmes ont pour input un objet \textit{Dataset} qui est composé de plusieurs objets \textit{Class} qui sont eux-mêmes composés de plusieurs objets \textit{Item}.
+
+L'algorithme Dyer-Zemel utilise des objets \textit{Pair} pour former des couples de \textit{Item}.
+L'algorithme de recherche exhaustive utilise des objets \textit{IndexAllocation} pour créer des allocations à partir des indices des objets \textit{Item}.
+
+Les objets \textit{Allocation} et \textit{WeightedAllocation} sont composés de plusieurs objets \textit{Item}. Ils font parti de l'output des différents algorithmes.
+
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=14cm]{KnapsackClasses.png}
+	\includegraphics[width=12cm]{KnapsackClasses.png}
 	\caption{Diagramme de classes}
 	\label{fig:diagramme}
 \end{figure}
 
+\newpage
 \section{Application économique}
 % Je vais ici parler de l'application du MCKP à une politique d'incitation.
 
@@ -328,8 +345,6 @@ Si l'objectif du gouvernement est de maximiser la somme des bénéfices sociaux 
 
 L'allocation optimale retournée par les algorithmes du MCKP correspond au choix qui doit être fait par chaque individus.
 Le montant des incitations distribué, pour chaque individu, est égal à la différence entre le poids de l'objet choisi à l'optimum et le poids de l'objet le plus léger (c'est le choix qui procure la plus grande utilité à l'individu).
-
-\section{Références}
 
 \begin{thebibliography}{9}
 \bibitem{Knapsack2004}
