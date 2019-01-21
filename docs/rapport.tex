@@ -183,7 +183,7 @@ L'algorithme Greedy avec enveloppe convexe réduit le nombre d'allocation maxima
 
 Soient trois objets $x$, $y$ et $z$ de la même classe qui vérifient $w_{x} < w_{y} < w_{z}$. Alors on dit que que l'objet $y$ est LP-dominé par $x$ et $z$ si 
 \[ \frac{p_z—p_y}{w_z—w_y} \geq \frac{p_y—p_x}{w_y—w_x}. \]
-L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la classe qui ne sont ni dominés, ni LP-dominés au sein de cette classe. Ensuite, après avoir trié chaque enveloppe par poids croissant, nous calculons l'efficacité de chaque objet au sein de cet enveloppe. Ensuite, à chaque itération, on va prendre l'objet restant avec l'efficacité la plus grande au sein de toutes les classes, jusqu'à atteindre le poids maximal.
+L'enveloppe convexe de chaque classe est alors l'ensemble des objets de la classe qui ne sont ni dominés, ni LP-dominés au sein de cette classe. Ensuite, après avoir trié chaque enveloppe par poids croissant, nous calculons l'efficacité de chaque objet au sein de cet enveloppe (efficacité de cet objet par rapport à l'objet avant lui dans l'enveloppe convexe). Ensuite, à chaque itération, on va prendre l'objet restant avec l'efficacité la plus grande au sein de toutes les classes, jusqu'à atteindre le poids maximal.
 
 L'algorithme \ref{alg:greedy-convexe} est un pseudo-code de l'algorithme implémenté en C++.
 
