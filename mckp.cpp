@@ -112,51 +112,88 @@ Dataset example2() {
 }
 
 int main() {
-#ifdef SMALL
-	Dataset data = example2();
 
-	cout << "===== Dataset =====" << endl;
-	data.affiche();
+	int i;
+	Dataset data = example1();
 
-	double capacity = 6;
-	// Test Exhaustive Search.
-	cout << "===== Exhaustive Search =====" << endl;
-	Allocation optimalAllocation0 = ExhaustiveSearch(&data, capacity);
-	cout << "Optimal value is: " << optimalAllocation0.getValue() << endl;
-	// Test Dyer-Zemel.
-	cout << "===== Dyer-Zemel =====" << endl;
-	pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
-	Allocation optimalAllocation1 = resultPair.second;
-	cout << "Optimal value is: " << optimalAllocation1.getValue() << endl;
-	// Test Greedy.
-	cout << "===== Greedy =====" << endl;
-	pair < Allocation, vector<double> > resultPair2 = MCKP_Greedy_Algorithm(&data, capacity);
-	Allocation optimalAllocation2 = resultPair2.first;
-	cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;
-	// Test Discrete.
-	cout << "===== Discrete =====" << endl;
-	Allocation optimalAllocation3 = MCKP_Discrete_Algorithm(&data, capacity);
-	cout << "Optimal value is: " << optimalAllocation3.getValue() << endl;
-#endif
-#ifdef LARGE
-	Dataset data = random_data(10000, 100);
+	cout << "Which dataset do you want to use?" << endl;
+	cout << "1) Dataset from example 1 (3 classes with 11, 8 and 9 items)." << endl;
+	cout << "2) Dataset from example 2 (3 classes with 4 items each)." << endl;
+	cout << "3) Simulated dataset." << endl;
+	cin >> i;
 
-	cout << "Minimum capacity is " << data.getMinWeight() << endl;
-	cout << "Maximum capacity is " << data.getMaxWeight() << endl;
+	if( i == 1) {
+		data = example1();
+	} else if( i == 2) {
+		data = example2();
+	} else {
+		int nbClasses;
+		int nbItems;
+		cout << "How many classes do you want to generate?" << endl;
+		cin >> nbClasses;
+		cout << "How many items do you want in each class?" << endl;
+		cin >> nbItems;
+		data = random_data(nbClasses, nbItems);
+	}
 
-	double capacity = 100000;
-	// Test Dyer-Zemel.
-	cout << "===== Dyer-Zemel =====" << endl;
-	pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
-	Allocation optimalAllocation1 = resultPair.second;
-	cout << "Optimal value is: " << optimalAllocation1.getValue() << endl;
-	// Test Greedy.
-	cout << "===== Greedy =====" << endl;
-	WeightedAllocation optimalAllocation2 = MCKP_Greedy_Algorithm(&data, capacity);
-	cout << "Optimal value is: " << optimalAllocation2.getValue() << endl;
-	// Test Discrete.
-	cout << "===== Discrete =====" << endl;
-	Allocation optimalAllocation3 = MCKP_Discrete_Algorithm(&data, capacity);
-	cout << "Optimal value is: " << optimalAllocation3.getValue() << endl;
-#endif
+	double minW = data.getMinWeight();
+	double maxW = data.getMaxWeight();
+	double capacity;
+	cout << "What is the capacity of the knapsack? (min: " << minW << "; max: " << maxW << ")" << endl;
+	cin >> capacity;
+
+	string c;
+	while( i != 0 ) {
+		cout << "What do you want to do?" << endl;
+		cout << "0) Exit." << endl;
+		cout << "1) Display dataset." << endl;
+		cout << "2) Run Exhaustive Search." << endl;
+		cout << "3) Run Simple Greedy." << endl;
+		cout << "4) Run Convex Greedy." << endl;
+		cout << "5) Run Dyer-Zemel." << endl;
+		cin >> i;
+		cout << endl;
+		if( i == 1) {
+			cout << "===== Dataset =====" << endl;
+			data.affiche();
+		} else if (i == 2) {
+			cout << "===== Exhaustive Search =====" << endl;
+			Allocation optimalAllocation = ExhaustiveSearch(&data, capacity);
+			cout << "Optimal value is: " << optimalAllocation.getValue() << endl;
+			cout << "Do you want to display the optimal allocation? (y/n)" << endl;
+			cin >> c;
+			if (c == "y") {
+				optimalAllocation.affiche();
+			}
+		} else if (i == 3) {
+			cout << "===== Discrete =====" << endl;
+			Allocation optimalAllocation = MCKP_Discrete_Algorithm(&data, capacity);
+			cout << "Optimal value is: " << optimalAllocation.getValue() << endl;
+			cout << "Do you want to display the optimal allocation? (y/n)" << endl;
+			cin >> c;
+			if (c == "y") {
+				optimalAllocation.affiche();
+			}
+		} else if (i == 4) {
+			cout << "===== Greedy =====" << endl;
+			WeightedAllocation optimalAllocation = MCKP_Greedy_Algorithm(&data, capacity);
+			cout << "Optimal value is: " << optimalAllocation.getValue() << endl;
+			cout << "Do you want to display the optimal allocation? (y/n)" << endl;
+			cin >> c;
+			if (c == "y") {
+				optimalAllocation.affiche();
+			}
+		} else if (i == 5) {
+			cout << "===== Dyer-Zemel =====" << endl;
+			pair <double, Allocation> resultPair = DyerZemelAlgorithm(&data, capacity);
+			Allocation optimalAllocation = resultPair.second;
+			cout << "Optimal value is: " << optimalAllocation.getValue() << endl;
+			cout << "Do you want to display the optimal allocation? (y/n)" << endl;
+			cin >> c;
+			if (c == "y") {
+				optimalAllocation.affiche();
+			}
+		}
+		cout << endl;
+	}
 }
